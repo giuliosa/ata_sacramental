@@ -14,8 +14,9 @@ type ProfileCheck = {
   ala_id: string | null
 }
 
-type ModeloRow = {
+type ModeloOption = {
   id: string
+  nome: string
 }
 
 export default async function NovaAtaPage() {
@@ -33,15 +34,13 @@ export default async function NovaAtaPage() {
 
   if (!can.createAta(profile.role)) redirect('/atas')
 
-  const { data: modelo } = await supabase
+  const { data: modelos } = await supabase
     .from('modelos')
-    .select('id')
+    .select('id, nome')
     .eq('ativo', true)
-    .limit(1)
-    .single()
-    .overrideTypes<ModeloRow, { merge: false }>()
+    .overrideTypes<ModeloOption[], { merge: false }>()
 
-  if (!modelo) {
+  if (!modelos?.length) {
     return (
       <div className="max-w-3xl">
         <Link
@@ -71,7 +70,7 @@ export default async function NovaAtaPage() {
 
       <h1 className="mb-6 text-2xl font-semibold text-gray-900">Nova ata</h1>
 
-      <NovaAtaClient modeloId={modelo.id} />
+      <NovaAtaClient modelos={modelos} />
     </div>
   )
 }
