@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  type LucideIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -26,7 +27,7 @@ type AppShellProps = {
 type NavItem = {
   href: string
   label: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: LucideIcon
   adminOnly?: boolean
 }
 

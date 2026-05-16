@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+type UserProfileStatus = {
+  ala_id: string | null
+}
+
 /**
  * Route Handler para o callback do OAuth do Supabase.
  * Após o login com Google, o Supabase redireciona para esta rota com um `code`.
@@ -25,6 +29,7 @@ export async function GET(request: Request) {
           .select('ala_id')
           .eq('id', user.id)
           .single()
+          .overrideTypes<UserProfileStatus, { merge: false }>()
 
         // Primeiro login: redireciona para completar cadastro
         if (!profile?.ala_id) {
