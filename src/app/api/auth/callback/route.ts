@@ -17,6 +17,8 @@ export async function GET(request: Request) {
     const cookieStore = await cookies()
     const { url, key } = getSupabaseConfig()
 
+    const setCookies: { name: string; value: string; options: CookieOptions }[] = []
+
     const supabase = createServerClient<Database>(url, key, {
       cookies: {
         getAll() {
@@ -25,6 +27,7 @@ export async function GET(request: Request) {
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options)
+            setCookies.push({ name, value, options })
           })
         },
       },
@@ -50,9 +53,8 @@ export async function GET(request: Request) {
       }
 
       const response = NextResponse.redirect(destination)
-      const allCookies = cookieStore.getAll()
-      for (const cookie of allCookies) {
-        response.cookies.set(cookie.name, cookie.value)
+      for (const { name, value, options } of setCookies) {
+        response.cookies.set(name, value, options)
       }
       return response
     }
