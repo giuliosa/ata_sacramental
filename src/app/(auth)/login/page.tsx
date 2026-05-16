@@ -10,7 +10,7 @@ export default function LoginPage() {
     <div className="w-full max-w-sm space-y-8">
       {/* Logo / Cabeçalho */}
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600">
+        <div className="mx-auto my-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600">
           <svg
             className="h-7 w-7 text-white"
             fill="none"
