@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { getSupabaseConfig } from './config'
 import type { NextRequest, NextResponse } from 'next/server'
 import type { Database } from '@/types/supabase'
 
@@ -7,9 +8,11 @@ import type { Database } from '@/types/supabase'
  * Necessário para renovar sessões em cada request (sliding session).
  */
 export function createClient(request: NextRequest, response: NextResponse) {
+  const { url, key } = getSupabaseConfig()
+
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    key,
     {
       cookies: {
         getAll() {

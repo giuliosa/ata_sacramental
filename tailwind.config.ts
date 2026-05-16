@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        border: '#e5e7eb',
         brand: {
           50:  '#f0f4fe',
           100: '#dde6fc',
