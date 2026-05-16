@@ -40,10 +40,10 @@ npm install -g supabase
 
 # Caso o npm não funcione, use o scoop. 
 # 1. Instalar o Scoop (se não tiver):
-powershellirm get.scoop.sh | iex
+irm get.scoop.sh | iex
 
 # 2. Instalar o Supabase CLI:
-powershellscoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
 scoop install supabase
 
 # Rode as migrations no seu projeto remoto
