@@ -195,5 +195,6 @@ export type Database = {
     Enums: {
       user_role: 'adm' | 'editor' | 'reader'
     }
+    CompositeTypes: Record<string, never>
   }
 }
