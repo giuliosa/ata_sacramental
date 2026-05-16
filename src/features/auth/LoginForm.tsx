@@ -14,7 +14,7 @@ export function LoginForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -26,11 +26,16 @@ export function LoginForm() {
       toast.error('Erro ao entrar com Google. Tente novamente.')
       setIsLoading(false)
     }
-    // Se bem-sucedido, o Supabase redireciona — não precisa fazer nada aqui
   }
 
   return (
     <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
+      {typeof window !== 'undefined' && new URL(window.location.href).searchParams.get('error') === 'callback_error' && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          Erro ao autenticar. Tente novamente.
+        </div>
+      )}
+
       <button
         onClick={handleGoogleLogin}
         disabled={isLoading}

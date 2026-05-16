@@ -1,27 +1,40 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { getSupabaseConfig } from '@/lib/supabase/config'
+import type { Database } from '@/types/supabase'
 
 type UserProfileStatus = {
   ala_id: string | null
 }
 
-/**
- * Route Handler para o callback do OAuth do Supabase.
- * Após o login com Google, o Supabase redireciona para esta rota com um `code`.
- * Trocamos o code por uma sessão e redirecionamos o usuário.
- */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    const { url, key } = getSupabaseConfig()
+
+    const supabase = createServerClient<Database>(url, key, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        },
+      },
+    })
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Verifica se o usuário já completou o cadastro (tem ala vinculada)
       const { data: { user } } = await supabase.auth.getUser()
+      let destination = `${origin}${next}`
 
       if (user) {
         const { data: profile } = await supabase
@@ -31,16 +44,19 @@ export async function GET(request: Request) {
           .single()
           .overrideTypes<UserProfileStatus, { merge: false }>()
 
-        // Primeiro login: redireciona para completar cadastro
         if (!profile?.ala_id) {
-          return NextResponse.redirect(`${origin}/completar-cadastro`)
+          destination = `${origin}/completar-cadastro`
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`)
+      const response = NextResponse.redirect(destination)
+      const allCookies = cookieStore.getAll()
+      for (const cookie of allCookies) {
+        response.cookies.set(cookie.name, cookie.value)
+      }
+      return response
     }
   }
 
-  // Erro: redireciona para login com mensagem
   return NextResponse.redirect(`${origin}/login?error=callback_error`)
 }
