@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { can } from '@/lib/permissions'
 import type { User } from '@/types/domain'
 

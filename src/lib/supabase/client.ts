@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { getSupabaseConfig } from './config'
 import type { Database } from '@/types/supabase'
 
 /**
@@ -6,8 +7,7 @@ import type { Database } from '@/types/supabase'
  * Cria uma nova instância por chamada — o @supabase/ssr gerencia o singleton internamente.
  */
 export function createClient() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  )
+  const { url, key } = getSupabaseConfig()
+
+  return createBrowserClient<Database>(url, key)
 }

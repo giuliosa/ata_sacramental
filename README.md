@@ -29,7 +29,7 @@ Edite `.env.local` com suas credenciais do Supabase:
 
 - Acesse [supabase.com](https://supabase.com) → seu projeto → Settings → API
 - Copie `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
-- Copie `anon public` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Copie `publishable` → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - Copie `service_role` → `SUPABASE_SERVICE_ROLE_KEY` (**nunca exponha no frontend**)
 
 ### 3. Rodar as migrations

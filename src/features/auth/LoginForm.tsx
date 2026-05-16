@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
