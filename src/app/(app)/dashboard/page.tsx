@@ -4,7 +4,20 @@ import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { formatDateBR } from '@/lib/utils'
 import { can } from '@/lib/permissions'
+import type { Json } from '@/types/supabase'
 import type { UserRole } from '@/types/domain'
+
+type DashboardProfile = {
+  role: UserRole
+  ala_id: string | null
+  ala: { nome: string } | null
+}
+
+type RecentAta = {
+  id: string
+  data_reuniao: string
+  conteudo: Json
+}
 
 export const metadata: Metadata = { title: 'Início' }
 
@@ -17,6 +30,7 @@ export default async function DashboardPage() {
     .select('role, ala_id, ala:alas(nome)')
     .eq('id', user!.id)
     .single()
+    .overrideTypes<DashboardProfile, { merge: false }>()
 
   const { data: atasRecentes } = await supabase
     .from('atas')
@@ -24,8 +38,9 @@ export default async function DashboardPage() {
     .eq('ala_id', profile!.ala_id!)
     .order('data_reuniao', { ascending: false })
     .limit(5)
+    .overrideTypes<RecentAta[], { merge: false }>()
 
-  const role = profile?.role as UserRole
+  const role = profile?.role ?? 'reader'
 
   return (
     <div className="space-y-6">
@@ -34,8 +49,8 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Início</h1>
           <p className="mt-1 text-sm text-gray-500">
-            {profile?.ala && typeof profile.ala === 'object' && 'nome' in profile.ala
-              ? `Ala ${(profile.ala as { nome: string }).nome}`
+            {profile?.ala
+              ? `Ala ${profile.ala.nome}`
               : 'Bem-vindo'}
           </p>
         </div>

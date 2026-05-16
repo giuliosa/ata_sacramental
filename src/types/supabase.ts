@@ -33,6 +33,7 @@ export type Database = {
           nome?: string
           created_at?: string
         }
+        Relationships: []
       }
       alas: {
         Row: {
@@ -53,6 +54,15 @@ export type Database = {
           estaca_id?: string
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'alas_estaca_id_fkey'
+            columns: ['estaca_id']
+            isOneToOne: false
+            referencedRelation: 'estacas'
+            referencedColumns: ['id']
+          },
+        ]
       }
       users: {
         Row: {
@@ -60,7 +70,7 @@ export type Database = {
           email: string
           name: string
           role: 'adm' | 'editor' | 'reader'
-          ala_id: string
+          ala_id: string | null
           created_at: string
         }
         Insert: {
@@ -68,7 +78,7 @@ export type Database = {
           email: string
           name: string
           role?: 'adm' | 'editor' | 'reader'
-          ala_id: string
+          ala_id?: string | null
           created_at?: string
         }
         Update: {
@@ -76,9 +86,18 @@ export type Database = {
           email?: string
           name?: string
           role?: 'adm' | 'editor' | 'reader'
-          ala_id?: string
+          ala_id?: string | null
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'users_ala_id_fkey'
+            columns: ['ala_id']
+            isOneToOne: false
+            referencedRelation: 'alas'
+            referencedColumns: ['id']
+          },
+        ]
       }
       modelos: {
         Row: {
@@ -105,6 +124,15 @@ export type Database = {
           ativo?: boolean
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'modelos_criado_por_fkey'
+            columns: ['criado_por']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       atas: {
         Row: {
@@ -137,6 +165,29 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'atas_ala_id_fkey'
+            columns: ['ala_id']
+            isOneToOne: false
+            referencedRelation: 'alas'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'atas_criado_por_fkey'
+            columns: ['criado_por']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'atas_modelo_id_fkey'
+            columns: ['modelo_id']
+            isOneToOne: false
+            referencedRelation: 'modelos'
+            referencedColumns: ['id']
+          },
+        ]
       }
     }
     Views: Record<string, never>
@@ -144,5 +195,6 @@ export type Database = {
     Enums: {
       user_role: 'adm' | 'editor' | 'reader'
     }
+    CompositeTypes: Record<string, never>
   }
 }

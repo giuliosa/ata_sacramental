@@ -23,7 +23,7 @@ export type User = {
   email: string
   name: string
   role: UserRole
-  ala_id: string
+  ala_id: string | null
   ala?: Ala
   created_at: string
 }

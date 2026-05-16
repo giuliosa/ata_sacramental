@@ -63,7 +63,9 @@ supabase db push --project-ref SEU_PROJECT_REF
 
 ### 5. Criar o primeiro adm manualmente
 
-Após o primeiro login com Google, acesse o Supabase dashboard → Table Editor → `users`:
+Após o primeiro login com Google, o Supabase cria o usuário em `auth.users` e a migration cria automaticamente o perfil correspondente em `public.users`.
+
+Acesse o Supabase dashboard → Table Editor → `users`:
 - Mude o `role` do seu usuário de `reader` para `adm`
 - Vincule-o a uma ala em `ala_id`
 
