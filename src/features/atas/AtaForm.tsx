@@ -73,15 +73,15 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
     })
   }
 
-  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20'
-  const labelClass = 'block text-sm font-medium text-gray-700'
+  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100'
+  const labelClass = 'block text-sm font-medium text-gray-700 dark:text-slate-300'
   const errorClass = 'mt-1 text-xs text-red-600'
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
       {/* Presidência */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Presidência</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Presidência</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="presidida_por" className={labelClass}>Presidida por</label>
@@ -97,8 +97,8 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Música e Orações */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Música e Orações</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Música e Orações</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="regente" className={labelClass}>Regente</label>
@@ -126,9 +126,9 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Anúncios */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Anúncios</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Anúncios</h2>
           <button
             type="button"
             onClick={() => appendAnuncio({ id: generateId(), data: '', descricao: '' })}
@@ -137,7 +137,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
             <Plus className="h-3.5 w-3.5" /> Adicionar
           </button>
         </div>
-        {anuncioFields.length === 0 && <p className="text-sm text-gray-400">Nenhum anúncio.</p>}
+        {anuncioFields.length === 0 && <p className="text-sm text-gray-400 dark:text-slate-500">Nenhum anúncio.</p>}
         <div className="space-y-3">
           {anuncioFields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-3">
@@ -160,7 +160,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
               <button
                 type="button"
                 onClick={() => removeAnuncio(index)}
-                className="mt-2 shrink-0 text-gray-400 hover:text-red-600"
+                className="mt-2 shrink-0 text-gray-400 hover:text-red-600 dark:text-slate-500"
                 aria-label="Remover anúncio"
               >
                 <Trash2 className="h-4 w-4" />
@@ -171,12 +171,12 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Sacerdócio */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Sacerdócio</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Sacerdócio</h2>
 
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Apoios</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-slate-300">Apoios</span>
             <button
               type="button"
               onClick={() => appendApoio({ id: generateId(), cargo: '', nome_membro: '' })}
@@ -185,7 +185,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
               <Plus className="h-3.5 w-3.5" /> Adicionar
             </button>
           </div>
-          {apoioFields.length === 0 && <p className="mb-2 text-sm text-gray-400">Nenhum apoio.</p>}
+          {apoioFields.length === 0 && <p className="mb-2 text-sm text-gray-400 dark:text-slate-500">Nenhum apoio.</p>}
           <div className="space-y-3">
             {apoioFields.map((field, index) => (
               <div key={field.id} className="flex items-start gap-3">
@@ -208,8 +208,8 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
                 <button
                   type="button"
                   onClick={() => removeApoio(index)}
-                  className="mt-2 shrink-0 text-gray-400 hover:text-red-600"
-                  aria-label="Remover apoio"
+                className="mt-2 shrink-0 text-gray-400 hover:text-red-600 dark:text-slate-500"
+                aria-label="Remover apoio"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -230,8 +230,8 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Sacramento */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Sacramento</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Sacramento</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="hino_sacramental_numero" className={labelClass}>Nº do hino</label>
@@ -245,9 +245,9 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Programa */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Discursantes</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Discursantes</h2>
           {discursanteFields.length < 3 && (
             <button
               type="button"
@@ -267,7 +267,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
         <div className="space-y-3">
           {discursanteFields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-3">
-              <span className="mt-2 text-sm font-medium text-gray-400">{index + 1}.</span>
+              <span className="mt-2 text-sm font-medium text-gray-400 dark:text-slate-500">{index + 1}.</span>
               <div className="flex-1">
                 <input
                   {...register(`discursantes.${index}.nome`)}
@@ -286,7 +286,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
               <button
                 type="button"
                 onClick={() => removeDiscursante(index)}
-                className="mt-2 shrink-0 text-gray-400 hover:text-red-600"
+                className="mt-2 shrink-0 text-gray-400 hover:text-red-600 dark:text-slate-500"
                 aria-label="Remover discursante"
               >
                 <Trash2 className="h-4 w-4" />
@@ -295,7 +295,7 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
           ))}
         </div>
 
-        <hr className="my-4 border-gray-100" />
+        <hr className="my-4 border-gray-100 dark:border-slate-700" />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -310,8 +310,8 @@ export function AtaForm({ defaultValues, onSubmit, isSubmitting }: AtaFormProps)
       </section>
 
       {/* Encerramento */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Encerramento</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Encerramento</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="hino_final_numero" className={labelClass}>Nº do hino final</label>

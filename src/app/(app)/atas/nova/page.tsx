@@ -45,14 +45,14 @@ export default async function NovaAtaPage() {
       <div className="max-w-3xl">
         <Link
           href="/atas"
-          className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+          className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Voltar
         </Link>
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-          <p className="text-sm text-gray-500">Nenhum modelo ativo disponível.</p>
-          <p className="mt-1 text-xs text-gray-400">Peça a um administrador para criar um modelo.</p>
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-sm text-gray-500 dark:text-slate-400">Nenhum modelo ativo disponível.</p>
+          <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">Peça a um administrador para criar um modelo.</p>
         </div>
       </div>
     )
@@ -62,13 +62,13 @@ export default async function NovaAtaPage() {
     <div className="max-w-3xl">
       <Link
         href="/atas"
-        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Voltar
       </Link>
 
-      <h1 className="mb-6 text-2xl font-semibold text-gray-900">Nova ata</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Nova ata</h1>
 
       <NovaAtaClient modelos={modelos} />
     </div>

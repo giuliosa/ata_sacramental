@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { QueryProvider } from '@/components/providers/QueryProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { ThemeScript } from '@/components/providers/ThemeScript'
 import '@/styles/globals.css'
 
 const inter = Inter({
@@ -23,12 +25,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
-      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
-        <QueryProvider>
-          {children}
-        </QueryProvider>
-        <Toaster position="top-right" richColors />
+    <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen antialiased">
+        <ThemeScript />
+        <ThemeProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+          <Toaster position="top-right" richColors />
+        </ThemeProvider>
       </body>
     </html>
   )

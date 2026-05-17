@@ -31,38 +31,38 @@ export default function AdminUsuariosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Usuários</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-slate-100">Usuários</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
           Gerencie os usuários e suas permissões no sistema.
         </p>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          <Loader2 className="h-6 w-6 animate-spin text-gray-400 dark:text-slate-500" />
         </div>
       ) : !usuarios?.length ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-          <Users className="mx-auto h-10 w-10 text-gray-300" aria-hidden="true" />
-          <p className="mt-3 text-sm text-gray-500">Nenhum usuário encontrado.</p>
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+          <Users className="mx-auto h-10 w-10 text-gray-300 dark:text-slate-600" aria-hidden="true" />
+          <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">Nenhum usuário encontrado.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+            <thead className="bg-gray-50 dark:bg-slate-700/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Nome</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Email</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Ala</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Cargo</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Nome</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Email</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Ala</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Cargo</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
               {usuarios.map(user => (
-                <tr key={user.id} className="transition-colors hover:bg-gray-50/50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{user.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{user.ala?.nome ?? '-'}</td>
+                <tr key={user.id} className="transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-slate-100">{user.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{user.email}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{user.ala?.nome ?? '-'}</td>
                   <td className="px-6 py-4">
                     <div className="relative">
                       <button
@@ -79,14 +79,14 @@ export default function AdminUsuariosPage() {
                       </button>
 
                       {editingId === user.id && (
-                        <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                        <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                           {(Object.entries(ROLE_LABELS) as [UserRole, string][]).map(([role, label]) => (
                             <button
                               key={role}
                               onClick={() => handleRoleChange(user.id, role)}
                               className={cn(
-                                'flex w-full items-center px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-50',
-                                role === user.role ? 'font-medium text-brand-600' : 'text-gray-700',
+                                'flex w-full items-center px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-50 dark:hover:bg-slate-700',
+                                role === user.role ? 'font-medium text-brand-600 dark:text-brand-400' : 'text-gray-700 dark:text-slate-300',
                               )}
                             >
                               {label}

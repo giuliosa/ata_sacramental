@@ -47,8 +47,8 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Início</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-slate-100">Início</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
             {profile?.ala
               ? `Ala ${profile.ala.nome}`
               : 'Bem-vindo'}
@@ -70,14 +70,14 @@ export default async function DashboardPage() {
       <section aria-labelledby="atas-recentes-title">
         <h2
           id="atas-recentes-title"
-          className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-400"
+          className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500"
         >
           Atas recentes
         </h2>
 
         {!atasRecentes?.length ? (
-          <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-            <p className="text-sm text-gray-500">Nenhuma ata registrada ainda.</p>
+          <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Nenhuma ata registrada ainda.</p>
             {can.createAta(role) && (
               <Link
                 href="/atas/nova"
@@ -96,19 +96,19 @@ export default async function DashboardPage() {
                 <li key={ata.id}>
                   <Link
                     href={`/atas/${ata.id}`}
-                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 transition-colors hover:border-brand-300 hover:bg-brand-50"
+                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 transition-colors hover:border-brand-300 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-600 dark:hover:bg-brand-900/20"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-900 dark:text-slate-100">
                         Reunião de {formatDateBR(ata.data_reuniao)}
                       </p>
                       {typeof conteudo?.presidida_por === 'string' && conteudo.presidida_por && (
-                        <p className="mt-0.5 text-xs text-gray-500">
+                        <p className="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
                           Presidida por {conteudo.presidida_por}
                         </p>
                       )}
                     </div>
-                    <span className="text-xs text-gray-400" aria-hidden="true">→</span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500" aria-hidden="true">→</span>
                   </Link>
                 </li>
               )

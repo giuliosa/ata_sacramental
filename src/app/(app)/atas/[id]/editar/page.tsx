@@ -50,13 +50,13 @@ export default async function EditarAtaPage({ params }: { params: Promise<{ id: 
     <div className="max-w-3xl">
       <Link
         href={`/atas/${id}`}
-        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Voltar
       </Link>
 
-      <h1 className="mb-6 text-2xl font-semibold text-gray-900">Editar ata</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Editar ata</h1>
 
       <EditarAtaClient
         ataId={ata.id}

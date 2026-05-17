@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { formatDateBR } from '@/lib/utils'
 import type { Json } from '@/types/supabase'
 import type { AtaConteudo } from '@/types/domain'
+import { PrintActions } from '@/features/atas/PrintActions'
+import { AutoPrint } from '@/features/atas/AutoPrint'
 
 export const metadata: Metadata = { title: 'Imprimir ata' }
 
@@ -44,7 +46,9 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
   const conteudo = ata.conteudo as unknown as AtaConteudo
 
   return (
-    <div className="mx-auto max-w-[210mm] bg-white p-8 text-sm leading-relaxed text-black print:p-0">
+    <div className="mx-auto max-w-[210mm] bg-white p-8 text-sm leading-relaxed text-black print:p-0 dark:bg-slate-800 dark:text-slate-100">
+      <AutoPrint />
+
       <div className="mb-6 text-center">
         <h1 className="text-lg font-bold uppercase tracking-wide">A Igreja de Jesus Cristo dos Santos dos Últimos Dias</h1>
         <p className="mt-1 font-semibold">{ata.ala?.nome}{ata.ala?.estaca ? ` — ${ata.ala.estaca.nome}` : ''}</p>
@@ -155,14 +159,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
         </table>
       </div>
 
-      <div className="no-print mt-8 text-center">
-        <button
-          onClick={() => window.print()}
-          className="rounded-lg bg-brand-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700"
-        >
-          Imprimir
-        </button>
-      </div>
+      <PrintActions ataId={ata.id} />
     </div>
   )
 }

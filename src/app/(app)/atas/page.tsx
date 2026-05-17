@@ -46,8 +46,8 @@ export default async function AtasListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Atas</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-slate-100">Atas</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
             {profile?.ala ? `Ala ${profile.ala.nome}` : 'Todas as atas'}
           </p>
         </div>
@@ -64,9 +64,9 @@ export default async function AtasListPage() {
       </div>
 
       {!atas?.length ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-          <FileText className="mx-auto h-10 w-10 text-gray-300" aria-hidden="true" />
-          <p className="mt-3 text-sm text-gray-500">Nenhuma ata registrada ainda.</p>
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+          <FileText className="mx-auto h-10 w-10 text-gray-300 dark:text-slate-600" aria-hidden="true" />
+          <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">Nenhuma ata registrada ainda.</p>
           {can.createAta(role) && (
             <Link
               href="/atas/nova"
@@ -78,26 +78,26 @@ export default async function AtasListPage() {
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+            <thead className="bg-gray-50 dark:bg-slate-700/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Data</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Presidida por</th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">Ações</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Data</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Presidida por</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
               {atas.map(ata => {
                 const conteudo = ata.conteudo as Record<string, unknown>
                 return (
-                  <tr key={ata.id} className="transition-colors hover:bg-brand-50/50">
+                  <tr key={ata.id} className="transition-colors hover:bg-brand-50/50 dark:hover:bg-brand-900/10">
                     <td className="px-6 py-4">
-                      <Link href={`/atas/${ata.id}`} className="text-sm font-medium text-gray-900 hover:text-brand-700">
+                      <Link href={`/atas/${ata.id}`} className="text-sm font-medium text-gray-900 hover:text-brand-700 dark:text-slate-100">
                         {formatDateBR(ata.data_reuniao)}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {typeof conteudo?.presidida_por === 'string' ? conteudo.presidida_por : '-'}
                     </td>
                     <td className="px-6 py-4 text-right">

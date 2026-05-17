@@ -19,23 +19,23 @@ export default function NovoModeloPage() {
     })
   }
 
-  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20'
+  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100'
 
   return (
     <div className="max-w-xl">
       <Link
         href="/modelos"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Voltar
       </Link>
 
-      <h1 className="mb-6 text-2xl font-semibold text-gray-900">Novo modelo</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Novo modelo</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-gray-200 bg-white p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
         <div>
-          <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome do modelo</label>
+          <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Nome do modelo</label>
           <input
             id="nome"
             value={nome}
@@ -44,7 +44,7 @@ export default function NovoModeloPage() {
             placeholder="Ex: Modelo Padrão — Reunião Sacramental"
             required
           />
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">
             O modelo será criado com o conteúdo padrão e ficará ativo automaticamente.
           </p>
         </div>
@@ -52,7 +52,7 @@ export default function NovoModeloPage() {
         <div className="flex items-center justify-end gap-3">
           <Link
             href="/modelos"
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Cancelar
           </Link>

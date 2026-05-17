@@ -5,6 +5,21 @@
 @layer base {
   :root {
     --color-brand: theme('colors.brand.600');
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+  }
+
+  .dark {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
   }
 
   * {
@@ -14,11 +29,21 @@
   html {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.2s, color 0.2s;
+  }
 }
 
 @layer utilities {
-  /* Esconde elementos na impressão por padrão */
   @media print {
+    * {
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+
     .no-print {
       display: none !important;
     }
@@ -29,8 +54,6 @@
 
     body {
       font-size: 12pt;
-      color: #000;
-      background: #fff;
     }
   }
 

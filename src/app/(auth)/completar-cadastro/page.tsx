@@ -225,7 +225,7 @@ export default async function CompletarCadastroPage({
                     ? 'Erro ao criar. Tente novamente.'
                     : null
 
-  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20'
+  const inputClass = 'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100'
 
   return (
     <div className="w-full max-w-md space-y-8">
@@ -233,28 +233,28 @@ export default async function CompletarCadastroPage({
         <div className="mx-auto my-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600">
           <BookOpen className="h-7 w-7 text-white" aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-slate-100">
           Completar cadastro
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
           Escolha sua unidade para acessar as atas da ala correta.
         </p>
       </div>
 
       {/* ─── Selecionar ala existente ─── */}
       {!isCreatingAla && !isCreatingEstaca && (
-        <form action={completeCadastro} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
+        <form action={completeCadastro} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
           {isAdm && (
             <a
               href="/completar-cadastro?action=criar-ala"
-              className="mb-4 flex items-center gap-2 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100"
+              className="mb-4 flex items-center gap-2 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100 dark:border-brand-700 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               Criar nova ala
             </a>
           )}
 
-          <label htmlFor="ala_id" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="ala_id" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
             Ala
           </label>
           <div className="relative mt-2">
@@ -262,7 +262,7 @@ export default async function CompletarCadastroPage({
               id="ala_id"
               name="ala_id"
               required
-              className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pr-10 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"
+              className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pr-10 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               defaultValue=""
             >
               <option value="" disabled>
@@ -275,19 +275,19 @@ export default async function CompletarCadastroPage({
               ))}
             </select>
             <MapPin
-              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-slate-500"
               aria-hidden="true"
             />
           </div>
 
           {errorMessage && (
-            <p className="mt-3 text-sm text-red-600" role="alert">
+            <p className="mt-3 text-sm text-red-600 dark:text-red-400" role="alert">
               {errorMessage}
             </p>
           )}
 
           {!alas?.length && (
-            <p className="mt-3 text-sm text-amber-700">
+            <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">
               Nenhuma ala cadastrada. {isAdm ? 'Crie uma nova ala acima.' : 'Peça para um administrador criar uma unidade primeiro.'}
             </p>
           )}
@@ -295,7 +295,7 @@ export default async function CompletarCadastroPage({
           <button
             type="submit"
             disabled={!alas?.length}
-            className="mt-6 flex w-full items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 flex w-full items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-brand-600 dark:hover:bg-brand-700"
           >
             Continuar
           </button>
@@ -304,14 +304,14 @@ export default async function CompletarCadastroPage({
 
       {/* ─── Criar ala ─── */}
       {isCreatingAla && !isCreatingEstaca && (
-        <form action={criarAla} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
-          <p className="mb-4 text-sm text-gray-600">
+        <form action={criarAla} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
+          <p className="mb-4 text-sm text-gray-600 dark:text-slate-400">
             Crie uma nova ala e vincule-se automaticamente a ela.
           </p>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
                 Nome da ala
               </label>
               <input
@@ -325,14 +325,14 @@ export default async function CompletarCadastroPage({
             </div>
 
             <div>
-              <label htmlFor="estaca_id" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="estaca_id" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
                 Estaca
               </label>
 
               {isAdm && (
                 <a
                   href="/completar-cadastro?action=criar-estaca"
-                  className="mb-2 flex items-center gap-2 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100"
+                  className="mb-2 flex items-center gap-2 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100 dark:border-brand-700 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900"
                 >
                   <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                   Criar nova estaca
@@ -359,7 +359,7 @@ export default async function CompletarCadastroPage({
           </div>
 
           {errorMessage && (
-            <p className="mt-3 text-sm text-red-600" role="alert">
+            <p className="mt-3 text-sm text-red-600 dark:text-red-400" role="alert">
               {errorMessage}
             </p>
           )}
@@ -367,13 +367,13 @@ export default async function CompletarCadastroPage({
           <div className="mt-6 flex items-center gap-3">
             <a
               href="/completar-cadastro"
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               Voltar
             </a>
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
+              className="flex-1 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 dark:bg-brand-600 dark:hover:bg-brand-700"
             >
               Criar e vincular
             </button>
@@ -383,13 +383,13 @@ export default async function CompletarCadastroPage({
 
       {/* ─── Criar estaca ─── */}
       {isCreatingEstaca && (
-        <form action={criarEstaca} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
-          <p className="mb-4 text-sm text-gray-600">
+        <form action={criarEstaca} className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
+          <p className="mb-4 text-sm text-gray-600 dark:text-slate-400">
             Crie uma nova estaca para poder vincular uma ala a ela.
           </p>
 
           <div>
-            <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
               Nome da estaca
             </label>
             <input
@@ -403,7 +403,7 @@ export default async function CompletarCadastroPage({
           </div>
 
           {errorMessage && (
-            <p className="mt-3 text-sm text-red-600" role="alert">
+            <p className="mt-3 text-sm text-red-600 dark:text-red-400" role="alert">
               {errorMessage}
             </p>
           )}
@@ -411,13 +411,13 @@ export default async function CompletarCadastroPage({
           <div className="mt-6 flex items-center gap-3">
             <a
               href="/completar-cadastro?action=criar-ala"
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               Voltar
             </a>
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
+              className="flex-1 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 dark:bg-brand-600 dark:hover:bg-brand-700"
             >
               Criar estaca
             </button>
