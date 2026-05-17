@@ -4,6 +4,11 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 
+function getRedirectUrl() {
+  if (typeof window === 'undefined') return `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/api/auth/callback`
+  return `${window.location.origin}/api/auth/callback`
+}
+
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -14,7 +19,7 @@ export function LoginForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: getRedirectUrl(),
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
