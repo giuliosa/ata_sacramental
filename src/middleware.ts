@@ -13,6 +13,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
+  // Raiz → redireciona conforme autenticação
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(user ? '/dashboard' : '/login', request.url))
+  }
+
   // Redireciona para login se não autenticado e rota protegida
   if (!user && !isPublicRoute) {
     const loginUrl = new URL('/login', request.url)
