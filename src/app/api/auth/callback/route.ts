@@ -11,6 +11,7 @@ type UserProfileStatus = {
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const type = searchParams.get('type')
   const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
@@ -36,6 +37,15 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
+      // Password recovery → redirect to password update page
+      if (type === 'recovery') {
+        const response = NextResponse.redirect(`${origin}/auth/atualizar-senha`)
+        for (const { name, value, options } of setCookies) {
+          response.cookies.set(name, value, options)
+        }
+        return response
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       let destination = `${origin}${next}`
 

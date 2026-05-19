@@ -2,14 +2,17 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Mail } from 'lucide-react'
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { EmailPasswordForm } from './EmailPasswordForm'
 
 function getRedirectUrl() {
-  if (typeof window === 'undefined') return `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/api/auth/callback`
-  return `${window.location.origin}/api/auth/callback`
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin
+  return `${base}/api/auth/callback`
 }
 
 export function LoginForm() {
+  const [tab, setTab] = useState<'google' | 'email'>('google')
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleGoogleLogin() {
@@ -34,31 +37,74 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
+    <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
       {typeof window !== 'undefined' && new URL(window.location.href).searchParams.get('error') === 'callback_error' && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400" role="alert">
           Erro ao autenticar. Tente novamente.
         </div>
       )}
 
-      <button
-        onClick={handleGoogleLogin}
-        disabled={isLoading}
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-        aria-label="Entrar com conta Google"
-      >
-        {isLoading ? (
-          <span
-            className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"
-            aria-hidden="true"
-          />
-        ) : (
-          <GoogleIcon />
-        )}
-        {isLoading ? 'Redirecionando…' : 'Entrar com Google'}
-      </button>
+      {/* Tabs */}
+      <div className="mb-6 flex rounded-lg bg-gray-100 p-0.5 dark:bg-slate-700" role="tablist">
+        <button
+          role="tab"
+          aria-selected={tab === 'google'}
+          onClick={() => setTab('google')}
+          className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            tab === 'google'
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-600 dark:text-slate-100'
+              : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+          }`}
+        >
+          Google
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === 'email'}
+          onClick={() => setTab('email')}
+          className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            tab === 'email'
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-600 dark:text-slate-100'
+              : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+          }`}
+        >
+          <Mail className="-mt-0.5 mr-1.5 inline h-3.5 w-3.5" aria-hidden="true" />
+          Email
+        </button>
+      </div>
 
-      <p className="mt-4 text-center text-xs text-gray-400">
+      {tab === 'google' ? (
+        <>
+          <button
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+            aria-label="Entrar com conta Google"
+          >
+            {isLoading ? (
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" aria-hidden="true" />
+            ) : (
+              <GoogleIcon />
+            )}
+            {isLoading ? 'Redirecionando…' : 'Entrar com Google'}
+          </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-slate-600" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-2 text-gray-400 dark:bg-slate-800 dark:text-slate-500">ou</span>
+            </div>
+          </div>
+
+          <EmailPasswordForm />
+        </>
+      ) : (
+        <EmailPasswordForm />
+      )}
+
+      <p className="mt-6 text-center text-xs text-gray-400 dark:text-slate-500">
         Acesso restrito a membros autorizados da unidade.
       </p>
     </div>
