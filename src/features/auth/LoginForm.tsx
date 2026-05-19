@@ -7,7 +7,7 @@ import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/clie
 import { EmailPasswordForm } from './EmailPasswordForm'
 
 function getRedirectUrl() {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin
+  const base = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000') : window.location.origin
   return `${base}/api/auth/callback`
 }
 

@@ -49,8 +49,7 @@ export function EmailPasswordForm() {
     }
     setIsLoading(true)
     const supabase = createBrowserSupabaseClient()
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin
-    const redirectTo = `${base}/api/auth/callback`
+    const redirectTo = `${window.location.origin}/api/auth/callback`
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -75,8 +74,7 @@ export function EmailPasswordForm() {
     }
     setIsLoading(true)
     const supabase = createBrowserSupabaseClient()
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin
-    const redirectTo = `${base}/api/auth/callback`
+    const redirectTo = `${window.location.origin}/api/auth/callback`
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
     })
