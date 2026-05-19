@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { ThemeScript } from '@/components/providers/ThemeScript'
+import { AuthProvider } from '@/components/providers/AuthProvider'
 import '@/styles/globals.css'
 
 const inter = Inter({
@@ -30,7 +31,9 @@ export default function RootLayout({
         <ThemeScript />
         <ThemeProvider>
           <QueryProvider>
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </QueryProvider>
           <Toaster position="top-right" richColors />
         </ThemeProvider>
