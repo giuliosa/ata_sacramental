@@ -1,6 +1,6 @@
 'use client'
 
-import { useTheme } from '@/components/providers/ThemeProvider'
+import { useTheme } from 'next-themes'
 import { Moon, Sun, Monitor } from 'lucide-react'
 
 const THEMES = [
@@ -11,6 +11,7 @@ const THEMES = [
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const currentTheme = theme ?? 'system'
 
   return (
     <fieldset className="flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-100 p-0.5 dark:border-slate-600 dark:bg-slate-800">
@@ -21,11 +22,11 @@ export function ThemeToggle() {
           type="button"
           onClick={() => setTheme(value)}
           className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
-            theme === value
+            currentTheme === value
               ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
               : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
-          aria-pressed={theme === value}
+          aria-pressed={currentTheme === value}
           aria-label={label}
         >
           <Icon className="h-3.5 w-3.5" />
