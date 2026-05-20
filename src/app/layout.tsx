@@ -28,8 +28,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
-        <ThemeScript />
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="atas-theme">
           <QueryProvider>
             <AuthProvider>
               {children}
