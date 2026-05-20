@@ -1,4 +1,9 @@
-const script = `
+/**
+ * Script inline estático para evitar FOUC de tema.
+ * SEGURO: string literal sem interpolação de dados externos.
+ * Não modificar para incluir variáveis dinâmicas sem sanitização.
+ */
+const THEME_INIT_SCRIPT  = `
 (function() {
   try {
     var theme = localStorage.getItem('atas-theme') || 'system';
@@ -16,5 +21,5 @@ const script = `
 `
 
 export function ThemeScript() {
-  return <script dangerouslySetInnerHTML={{ __html: script }} />
+  return <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
 }
