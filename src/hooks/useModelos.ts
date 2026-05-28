@@ -2,53 +2,17 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Modelo } from '@/types/domain'
+import type { Modelo, ApiResponse } from '@/types/domain'
+import { criarModeloAction, atualizarModeloAction, excluirModeloAction } from '@/features/modelos/actions'
 
-type ModeloRow = Modelo
-type ModelosResponse = { data: ModeloRow[] }
-
-async function fetchModelos(): Promise<ModeloRow[]> {
+async function fetchModelos(): Promise<Modelo[]> {
   const res = await fetch('/api/modelos')
   if (!res.ok) {
-    const body = await res.json()
+    const body: ApiResponse<never> = await res.json()
     throw new Error(body.error ?? 'Erro ao carregar modelos')
   }
-  const json: ModelosResponse = await res.json()
-  return json.data
-}
-
-async function createModelo(data: { nome: string; ativo?: boolean }): Promise<ModeloRow> {
-  const res = await fetch('/api/modelos', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-  const json = await res.json()
-  if (!res.ok) {
-    throw new Error(json.error ?? 'Erro ao criar modelo')
-  }
-  return json.data
-}
-
-async function updateModelo({ id, data }: { id: string; data: Partial<Pick<ModeloRow, 'nome' | 'ativo'>> }): Promise<ModeloRow> {
-  const res = await fetch(`/api/modelos/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-  const json = await res.json()
-  if (!res.ok) {
-    throw new Error(json.error ?? 'Erro ao atualizar modelo')
-  }
-  return json.data
-}
-
-async function deleteModelo(id: string): Promise<void> {
-  const res = await fetch(`/api/modelos/${id}`, { method: 'DELETE' })
-  if (!res.ok) {
-    const json = await res.json()
-    throw new Error(json.error ?? 'Erro ao excluir modelo')
-  }
+  const json: ApiResponse<Modelo[]> = await res.json()
+  return json.data!
 }
 
 export function useModelos() {
@@ -62,7 +26,11 @@ export function useCreateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createModelo,
+    mutationFn: async (data: { nome: string; ativo?: boolean }) => {
+      const result = await criarModeloAction(data)
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modelos'] })
       toast.success('Modelo criado com sucesso')
@@ -77,7 +45,11 @@ export function useUpdateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: updateModelo,
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Pick<Modelo, 'nome' | 'ativo'>> }) => {
+      const result = await atualizarModeloAction(id, data)
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modelos'] })
       toast.success('Modelo atualizado com sucesso')
@@ -92,7 +64,11 @@ export function useDeleteModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: deleteModelo,
+    mutationFn: async (id: string) => {
+      const result = await excluirModeloAction(id)
+      if (result.error) throw new Error(result.error)
+      return null
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modelos'] })
       toast.success('Modelo excluído com sucesso')

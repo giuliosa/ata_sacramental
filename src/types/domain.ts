@@ -123,9 +123,9 @@ export type ModeloConteudo = {
 
 export type ApiResponse<T> = {
   data: T
-  error: null
+  error?: null
 } | {
-  data: null
+  data?: null
   error: string
 }
 
@@ -134,4 +134,17 @@ export type PaginatedResponse<T> = {
   total: number
   page: number
   per_page: number
+}
+
+// ─── Admin Types ─────────────────────────────────────────────────────────────
+
+export type UpdateUsuarioData = {
+  role?: UserRole
+  ala_id?: string | null
+  name?: string
+}
+
+export type UnidadesData = {
+  estacas: Estaca[]
+  alas: Ala[]
 }
