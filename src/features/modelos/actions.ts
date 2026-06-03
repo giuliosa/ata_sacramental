@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient, getUserProfile } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
+import { handleApiError } from '@/lib/utils'
 import type { Modelo, ModeloCampo, ApiResponse } from '@/types/domain'
 
 const MAX_MODELOS = Number(process.env.MAX_MODELOS) || 3
@@ -16,9 +17,9 @@ export async function buscarModelosAction(): Promise<ApiResponse<Modelo[]>> {
       .order('nome')
 
     if (error) throw error
-    return { data: data as unknown as Modelo[] }
+    return { data: data as unknown as Modelo[], error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao buscar modelos' }
+    return handleApiError(error, 'Erro ao buscar modelos')
   }
 }
 
@@ -32,26 +33,26 @@ export async function buscarModeloAction(id: string): Promise<ApiResponse<Modelo
       .single()
 
     if (error) {
-      if (error.code === 'PGRST116') return { error: 'Modelo não encontrado' }
+      if (error.code === 'PGRST116') return { data: null, error: 'Modelo não encontrado' }
       throw error
     }
-    return { data: data as unknown as Modelo }
+    return { data: data as unknown as Modelo, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao buscar modelo' }
+    return handleApiError(error, 'Erro ao buscar modelo')
   }
 }
 
-export async function criarModeloAction(data: { 
+export async function criarModeloAction(data: {
   nome: string
   campos?: ModeloCampo[]
-  ativo?: boolean 
+  ativo?: boolean
 }): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
-    if (!data.nome?.trim()) return { error: 'Nome é obrigatório' }
+    if (!can.createModelo(profile.role)) return { data: null, error: 'Sem permissão' }
+    if (!data.nome?.trim()) return { data: null, error: 'Nome é obrigatório' }
 
     const supabase = await createClient()
     const willBeActive = data.ativo !== false
@@ -63,11 +64,11 @@ export async function criarModeloAction(data: {
         .eq('ativo', true)
 
       if ((count ?? 0) >= MAX_MODELOS) {
-        return { error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
+        return { data: null, error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
       }
     }
 
-    if (!profile.ala_id) return { error: 'Você precisa estar vinculado a uma ala' }
+    if (!profile.ala_id) return { data: null, error: 'Você precisa estar vinculado a uma ala' }
 
     const { data: novoModelo, error } = await supabase
       .from('modelos')
@@ -84,27 +85,27 @@ export async function criarModeloAction(data: {
     if (error) throw error
 
     revalidatePath('/modelos')
-    return { data: novoModelo as unknown as Modelo }
+    return { data: novoModelo as unknown as Modelo, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao criar modelo' }
+    return handleApiError(error, 'Erro ao criar modelo')
   }
 }
 
 export async function atualizarModeloAction(
-  id: string, 
+  id: string,
   data: Partial<Pick<Modelo, 'nome' | 'ativo' | 'campos'>>
 ): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
+    if (!can.createModelo(profile.role)) return { data: null, error: 'Sem permissão' }
 
     const supabase = await createClient()
     const updates: any = {}
 
     if (data.nome !== undefined) {
-      if (!data.nome.trim()) return { error: 'Nome inválido' }
+      if (!data.nome.trim()) return { data: null, error: 'Nome inválido' }
       updates.nome = data.nome.trim()
     }
 
@@ -125,7 +126,7 @@ export async function atualizarModeloAction(
             .eq('ativo', true)
 
           if ((count ?? 0) >= MAX_MODELOS) {
-            return { error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
+            return { data: null, error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
           }
         }
       }
@@ -142,17 +143,17 @@ export async function atualizarModeloAction(
     if (error) throw error
 
     revalidatePath('/modelos')
-    return { data: modeloAtualizado as unknown as Modelo }
+    return { data: modeloAtualizado as unknown as Modelo, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao atualizar modelo' }
+    return handleApiError(error, 'Erro ao atualizar modelo')
   }
 }
 
 export async function duplicarModeloAction(id: string): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
-    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
+    if (!can.createModelo(profile.role)) return { data: null, error: 'Sem permissão' }
 
     const supabase = await createClient()
 
@@ -162,7 +163,7 @@ export async function duplicarModeloAction(id: string): Promise<ApiResponse<Mode
       .eq('id', id)
       .single() as unknown as { data: { nome: string; campos: unknown } | null }
 
-    if (!original) return { error: 'Modelo não encontrado' }
+    if (!original) return { data: null, error: 'Modelo não encontrado' }
 
     const { count } = await supabase
       .from('modelos')
@@ -170,10 +171,10 @@ export async function duplicarModeloAction(id: string): Promise<ApiResponse<Mode
       .eq('ativo', true)
 
     if ((count ?? 0) >= MAX_MODELOS) {
-      return { error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
+      return { data: null, error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
     }
 
-    if (!profile.ala_id) return { error: 'Você precisa estar vinculado a uma ala' }
+    if (!profile.ala_id) return { data: null, error: 'Você precisa estar vinculado a uma ala' }
 
     const novoNome = `${original.nome} (cópia)`
 
@@ -192,18 +193,18 @@ export async function duplicarModeloAction(id: string): Promise<ApiResponse<Mode
     if (error) throw error
 
     revalidatePath('/modelos')
-    return { data: novoModelo as unknown as Modelo }
+    return { data: novoModelo as unknown as Modelo, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao duplicar modelo' }
+    return handleApiError(error, 'Erro ao duplicar modelo')
   }
 }
 
 export async function excluirModeloAction(id: string): Promise<ApiResponse<null>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
+    if (!can.createModelo(profile.role)) return { data: null, error: 'Sem permissão' }
 
     const supabase = await createClient()
     const { error } = await supabase
@@ -214,8 +215,8 @@ export async function excluirModeloAction(id: string): Promise<ApiResponse<null>
     if (error) throw error
 
     revalidatePath('/modelos')
-    return { data: null }
+    return { data: null, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao excluir modelo' }
+    return handleApiError(error, 'Erro ao excluir modelo')
   }
 }

@@ -21,6 +21,7 @@ export type User = {
   role: UserRole
   ala_id: string | null
   ala?: Ala
+  avatar_url?: string | null
   created_at: string
 }
 
@@ -42,6 +43,7 @@ export type Modelo = {
   ala_id: string
   ativo: boolean
   created_at: string
+  updated_at: string
 }
 
 export type Ata = {
@@ -57,12 +59,21 @@ export type Ata = {
   updated_at: string
 }
 
-export type ApiResponse<T> = {
+export type SuccessResponse<T> = {
   data: T
-  error?: null
-} | {
-  data?: null
+  error: null
+}
+
+export type ErrorResponse = {
+  data: null
   error: string
+  code?: string
+}
+
+export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
+
+export type UserProfile = User & {
+  ala: (Ala & { estaca: Estaca }) | null
 }
 
 export type PaginatedResponse<T> = {

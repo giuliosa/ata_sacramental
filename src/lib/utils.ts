@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { ModeloCampo } from '@/types/domain'
+import type { ModeloCampo, ErrorResponse } from '@/types/domain'
 
 /**
  * Combina classes Tailwind de forma segura, resolvendo conflitos.
@@ -8,6 +8,23 @@ import type { ModeloCampo } from '@/types/domain'
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+/**
+ * Utilitário centralizado para tratar erros de API/Actions.
+ */
+export function handleApiError(error: unknown, defaultMessage = 'Ocorreu um erro inesperado'): ErrorResponse {
+  console.error('[API Error]:', error)
+
+  if (error instanceof Error) {
+    return { data: null, error: error.message, code: (error as any).code }
+  }
+
+  if (typeof error === 'string') {
+    return { data: null, error }
+  }
+
+  return { data: null, error: defaultMessage }
 }
 
 /**
