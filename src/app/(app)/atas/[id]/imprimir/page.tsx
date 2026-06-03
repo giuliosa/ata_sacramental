@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { formatDateBR } from '@/lib/utils'
+import { formatHino, formatApoio, formatDiscursante, formatAnuncio } from '@/lib/print-utils'
 import type { Json } from '@/types/supabase'
 import type { AtaConteudo } from '@/types/domain'
 import { PrintActions } from '@/features/atas/PrintActions'
@@ -81,7 +82,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
           <tr>
             <td className="w-40 align-top font-semibold">Hino inicial</td>
             <td className="border-b border-dotted border-gray-400 pb-2">
-              {conteudo.hino_inicial_numero ? `Nº ${conteudo.hino_inicial_numero} — ` : ''}{conteudo.hino_inicial_titulo}
+              {formatHino(conteudo.hino_inicial_numero, conteudo.hino_inicial_titulo)}
             </td>
           </tr>
           <tr>
@@ -95,7 +96,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
         <div className="mb-4">
           <p className="mb-1 font-semibold">Anúncios</p>
           {conteudo.anuncios.map((a, i) => (
-            <p key={i} className="border-b border-dotted border-gray-400 py-1">[{a.data}] {a.descricao}</p>
+            <p key={i} className="border-b border-dotted border-gray-400 py-1">{formatAnuncio(a)}</p>
           ))}
         </div>
       )}
@@ -105,8 +106,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
           <p className="mb-1 font-semibold">Apoios</p>
           {conteudo.apoios.map((a, i) => (
             <p key={i} className="border-b border-dotted border-gray-400 py-1">
-              {a.cargo}: {a.nome_membro}
-              {a.votacao_aprovada === true ? ' — Aprovado' : ''}
+              {formatApoio(a)}
             </p>
           ))}
         </div>
@@ -123,7 +123,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
 
       {conteudo.hino_sacramental_titulo && (
         <div className="mb-4">
-          <p className="font-semibold">Hino sacramental: {conteudo.hino_sacramental_numero ? `Nº ${conteudo.hino_sacramental_numero} — ` : ''}{conteudo.hino_sacramental_titulo}</p>
+          <p className="font-semibold">Hino sacramental: {formatHino(conteudo.hino_sacramental_numero, conteudo.hino_sacramental_titulo)}</p>
         </div>
       )}
 
@@ -131,14 +131,14 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
         <p className="mb-1 font-semibold">Discursantes</p>
         {conteudo.discursantes.map((d, i) => (
           <p key={i} className="border-b border-dotted border-gray-400 py-1">
-            {d.nome}{d.tema ? ` — ${d.tema}` : ''}
+            {formatDiscursante(d)}
           </p>
         ))}
       </div>
 
       {conteudo.hino_intermediario_titulo && (
         <div className="mb-4">
-          <p className="font-semibold">Hino interm.: {conteudo.hino_intermediario_numero ? `Nº ${conteudo.hino_intermediario_numero} — ` : ''}{conteudo.hino_intermediario_titulo}</p>
+          <p className="font-semibold">Hino interm.: {formatHino(conteudo.hino_intermediario_numero, conteudo.hino_intermediario_titulo)}</p>
         </div>
       )}
 
@@ -148,7 +148,7 @@ export default async function AtaPrintPage({ params }: { params: Promise<{ id: s
             <tr>
               <td className="w-40 align-top font-semibold">Hino final</td>
               <td className="border-b border-dotted border-gray-400 pb-2">
-                {conteudo.hino_final_numero ? `Nº ${conteudo.hino_final_numero} — ` : ''}{conteudo.hino_final_titulo}
+                {formatHino(conteudo.hino_final_numero, conteudo.hino_final_titulo)}
               </td>
             </tr>
             <tr>

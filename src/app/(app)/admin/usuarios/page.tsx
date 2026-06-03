@@ -47,23 +47,37 @@ export default function AdminUsuariosPage() {
           <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">Nenhum usuário encontrado.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+        <div className="rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
             <thead className="bg-gray-50 dark:bg-slate-700/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Nome</th>
+                <th scope="col" className="rounded-tl-xl px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Nome</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Email</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Ala</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Cargo</th>
+                <th scope="col" className="rounded-tr-xl px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Cargo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-              {usuarios.map(user => (
-                <tr key={user.id} className="transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-slate-100">{user.name}</td>
+              {usuarios.map((user, index) => (
+                <tr 
+                  key={user.id} 
+                  className={cn(
+                    "transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-700/50",
+                    editingId === user.id && "relative z-20"
+                  )}
+                >
+                  <td className={cn(
+                    "px-6 py-4 text-sm font-medium text-gray-900 dark:text-slate-100",
+                    index === usuarios.length - 1 && "rounded-bl-xl"
+                  )}>
+                    {user.name}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{user.email}</td>
                   <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{user.ala?.nome ?? '-'}</td>
-                  <td className="px-6 py-4">
+                  <td className={cn(
+                    "px-6 py-4",
+                    index === usuarios.length - 1 && "rounded-br-xl"
+                  )}>
                     <div className="relative">
                       <button
                         onClick={() => setEditingId(editingId === user.id ? null : user.id)}
@@ -79,7 +93,7 @@ export default function AdminUsuariosPage() {
                       </button>
 
                       {editingId === user.id && (
-                        <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                        <div className="absolute right-0 z-50 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                           {(Object.entries(ROLE_LABELS) as [UserRole, string][]).map(([role, label]) => (
                             <button
                               key={role}
