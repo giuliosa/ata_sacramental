@@ -7,6 +7,40 @@ import type { Modelo, ApiResponse } from '@/types/domain'
 
 const MAX_MODELOS = Number(process.env.MAX_MODELOS) || 3
 
+export async function buscarModelosAction(): Promise<ApiResponse<Modelo[]>> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('modelos')
+      .select('*')
+      .order('nome')
+
+    if (error) throw error
+    return { data: data as unknown as Modelo[] }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao buscar modelos' }
+  }
+}
+
+export async function buscarModeloAction(id: string): Promise<ApiResponse<Modelo>> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('modelos')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') return { error: 'Modelo não encontrado' }
+      throw error
+    }
+    return { data: data as unknown as Modelo }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao buscar modelo' }
+  }
+}
+
 export async function criarModeloAction(data: { nome: string; ativo?: boolean; conteudo?: any }): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()

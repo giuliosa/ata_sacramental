@@ -3,41 +3,34 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import type { Ata, ApiResponse } from '@/types/domain'
 import type { CriarAtaFormData, EditarAtaFormData } from '@/lib/schemas'
-import { criarAtaAction, atualizarAtaAction, excluirAtaAction } from '@/features/atas/actions'
-
-async function fetchAtas(): Promise<Ata[]> {
-  const res = await fetch('/api/atas')
-  if (!res.ok) {
-    const body: ApiResponse<never> = await res.json()
-    throw new Error(body.error ?? 'Erro ao carregar atas')
-  }
-  const json: ApiResponse<Ata[]> = await res.json()
-  return json.data!
-}
-
-async function fetchAta(id: string): Promise<Ata> {
-  const res = await fetch(`/api/atas/${id}`)
-  if (!res.ok) {
-    const body: ApiResponse<never> = await res.json()
-    throw new Error(body.error ?? 'Erro ao carregar ata')
-  }
-  const json: ApiResponse<Ata> = await res.json()
-  return json.data!
-}
+import { 
+  criarAtaAction, 
+  atualizarAtaAction, 
+  excluirAtaAction,
+  buscarAtasAction,
+  buscarAtaAction
+} from '@/features/atas/actions'
 
 export function useAtas() {
   return useQuery({
     queryKey: ['atas'],
-    queryFn: fetchAtas,
+    queryFn: async () => {
+      const result = await buscarAtasAction()
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
   })
 }
 
 export function useAta(id: string) {
   return useQuery({
     queryKey: ['atas', id],
-    queryFn: () => fetchAta(id),
+    queryFn: async () => {
+      const result = await buscarAtaAction(id)
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
     enabled: !!id,
   })
 }

@@ -2,23 +2,22 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Modelo, ApiResponse } from '@/types/domain'
-import { criarModeloAction, atualizarModeloAction, excluirModeloAction } from '@/features/modelos/actions'
-
-async function fetchModelos(): Promise<Modelo[]> {
-  const res = await fetch('/api/modelos')
-  if (!res.ok) {
-    const body: ApiResponse<never> = await res.json()
-    throw new Error(body.error ?? 'Erro ao carregar modelos')
-  }
-  const json: ApiResponse<Modelo[]> = await res.json()
-  return json.data!
-}
+import type { Modelo } from '@/types/domain'
+import { 
+  criarModeloAction, 
+  atualizarModeloAction, 
+  excluirModeloAction,
+  buscarModelosAction
+} from '@/features/modelos/actions'
 
 export function useModelos() {
   return useQuery({
     queryKey: ['modelos'],
-    queryFn: fetchModelos,
+    queryFn: async () => {
+      const result = await buscarModelosAction()
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
   })
 }
 

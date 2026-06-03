@@ -3,7 +3,44 @@
 import { revalidatePath } from 'next/cache'
 import { createClient, getUserProfile } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
-import type { User, Estaca, Ala, UpdateUsuarioData, ApiResponse } from '@/types/domain'
+import type { User, Estaca, Ala, UpdateUsuarioData, ApiResponse, UnidadesData } from '@/types/domain'
+
+export async function buscarUsuariosAction(): Promise<ApiResponse<User[]>> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('users')
+      .select('*, ala:alas(*, estaca:estacas(*))')
+      .order('name')
+
+    if (error) throw error
+    return { data: data as unknown as User[] }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao buscar usuários' }
+  }
+}
+
+export async function buscarUnidadesAction(): Promise<ApiResponse<UnidadesData>> {
+  try {
+    const supabase = await createClient()
+    const [{ data: estacas, error: e1 }, { data: alas, error: e2 }] = await Promise.all([
+      supabase.from('estacas').select('*').order('nome'),
+      supabase.from('alas').select('*').order('nome'),
+    ])
+
+    if (e1) throw e1
+    if (e2) throw e2
+
+    return { 
+      data: { 
+        estacas: estacas as Estaca[], 
+        alas: alas as Ala[] 
+      } 
+    }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao buscar unidades' }
+  }
+}
 
 export async function atualizarUsuarioAction(id: string, data: UpdateUsuarioData): Promise<ApiResponse<User>> {
   try {

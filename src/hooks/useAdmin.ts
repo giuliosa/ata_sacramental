@@ -2,25 +2,25 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { User, Estaca, Ala, UnidadesData, UpdateUsuarioData, ApiResponse } from '@/types/domain'
-import { atualizarUsuarioAction, criarEstacaAction, criarAlaAction } from '@/features/admin/actions'
+import type { UpdateUsuarioData } from '@/types/domain'
+import { 
+  atualizarUsuarioAction, 
+  criarEstacaAction, 
+  criarAlaAction,
+  buscarUsuariosAction,
+  buscarUnidadesAction
+} from '@/features/admin/actions'
 
 // ─── Usuários ────────────────────────────────────────────────────────────────
-
-async function fetchUsuarios(): Promise<User[]> {
-  const res = await fetch('/api/admin/usuarios')
-  if (!res.ok) {
-    const body: ApiResponse<never> = await res.json()
-    throw new Error(body.error ?? 'Erro ao carregar usuários')
-  }
-  const json: ApiResponse<User[]> = await res.json()
-  return json.data!
-}
 
 export function useUsuarios() {
   return useQuery({
     queryKey: ['admin', 'usuarios'],
-    queryFn: fetchUsuarios,
+    queryFn: async () => {
+      const result = await buscarUsuariosAction()
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
   })
 }
 
@@ -45,20 +45,14 @@ export function useUpdateUsuario() {
 
 // ─── Unidades ────────────────────────────────────────────────────────────────
 
-async function fetchUnidades(): Promise<UnidadesData> {
-  const res = await fetch('/api/admin/unidades')
-  if (!res.ok) {
-    const body: ApiResponse<never> = await res.json()
-    throw new Error(body.error ?? 'Erro ao carregar unidades')
-  }
-  const json: ApiResponse<UnidadesData> = await res.json()
-  return json.data!
-}
-
 export function useUnidades() {
   return useQuery({
     queryKey: ['admin', 'unidades'],
-    queryFn: fetchUnidades,
+    queryFn: async () => {
+      const result = await buscarUnidadesAction()
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
   })
 }
 
