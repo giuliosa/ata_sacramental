@@ -54,7 +54,7 @@ export async function atualizarUsuarioAction(id: string, data: UpdateUsuarioData
     const supabase = await createClient()
     const { data: usuarioAtualizado, error } = await supabase
       .from('users')
-      .update(data)
+      .update(data as never)
       .eq('id', id)
       .select('*')
       .single()
@@ -82,7 +82,7 @@ export async function criarEstacaAction(nome: string): Promise<ApiResponse<Estac
     const supabase = await createClient()
     const { data: novaEstaca, error } = await supabase
       .from('estacas')
-      .insert({ nome: nome.trim() })
+      .insert({ nome: nome.trim() } as never)
       .select('*')
       .single()
 
@@ -113,7 +113,7 @@ export async function criarAlaAction(data: { nome: string; estaca_id: string }):
     const supabase = await createClient()
     const { data: novaAla, error } = await supabase
       .from('alas')
-      .insert({ nome: data.nome.trim(), estaca_id: data.estaca_id })
+      .insert({ nome: data.nome.trim(), estaca_id: data.estaca_id } as never)
       .select('*')
       .single()
 

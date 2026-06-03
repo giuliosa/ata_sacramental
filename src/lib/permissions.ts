@@ -13,6 +13,7 @@ import type { UserRole } from '@/types/domain'
  *  Ver atas da ala       |  ✅ |   ✅   |   ✅
  *  Imprimir ata          |  ✅ |   ✅   |   ✅
  *  Criar modelo          |  ✅ |   ❌   |   ❌
+ *  Compartilhar ata      |  ✅ |   ❌   |   ❌
  *  Gerenciar usuários    |  ✅ |   ❌   |   ❌
  *  Criar/vincular ala    |  ✅ |   ❌   |   ❌
  * ──────────────────────────────────────────────────
@@ -26,6 +27,8 @@ export const can = {
   createModelo:    (role: UserRole) => role === 'adm',
   manageUsers:     (role: UserRole) => role === 'adm',
   manageUnidades:  (role: UserRole) => role === 'adm',
+
+  shareAta:        (role: UserRole) => role === 'adm',
 } as const
 
 export type Permission = keyof typeof can

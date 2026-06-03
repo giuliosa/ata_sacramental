@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient, getUserProfile } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
-import type { Modelo, ApiResponse } from '@/types/domain'
+import type { Modelo, ModeloCampo, ApiResponse } from '@/types/domain'
 
 const MAX_MODELOS = Number(process.env.MAX_MODELOS) || 3
 
@@ -41,18 +41,17 @@ export async function buscarModeloAction(id: string): Promise<ApiResponse<Modelo
   }
 }
 
-export async function criarModeloAction(data: { nome: string; ativo?: boolean; conteudo?: any }): Promise<ApiResponse<Modelo>> {
+export async function criarModeloAction(data: { 
+  nome: string
+  campos?: ModeloCampo[]
+  ativo?: boolean 
+}): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()
     if (!profile) return { error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) {
-      return { error: 'Sem permissão para criar modelos' }
-    }
-
-    if (!data.nome || !data.nome.trim()) {
-      return { error: 'Nome do modelo é obrigatório' }
-    }
+    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
+    if (!data.nome?.trim()) return { error: 'Nome é obrigatório' }
 
     const supabase = await createClient()
     const willBeActive = data.ativo !== false
@@ -72,10 +71,10 @@ export async function criarModeloAction(data: { nome: string; ativo?: boolean; c
       .from('modelos')
       .insert({
         nome: data.nome.trim(),
-        conteudo: data.conteudo ?? { defaults: {}, campos_obrigatorios: [] },
+        campos: data.campos ?? [],
         criado_por: profile.id,
         ativo: willBeActive,
-      })
+      } as never)
       .select('*')
       .single()
 
@@ -88,14 +87,15 @@ export async function criarModeloAction(data: { nome: string; ativo?: boolean; c
   }
 }
 
-export async function atualizarModeloAction(id: string, data: Partial<Pick<Modelo, 'nome' | 'ativo' | 'conteudo'>>): Promise<ApiResponse<Modelo>> {
+export async function atualizarModeloAction(
+  id: string, 
+  data: Partial<Pick<Modelo, 'nome' | 'ativo' | 'campos'>>
+): Promise<ApiResponse<Modelo>> {
   try {
     const profile = await getUserProfile()
     if (!profile) return { error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) {
-      return { error: 'Sem permissão para atualizar modelos' }
-    }
+    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
 
     const supabase = await createClient()
     const updates: any = {}
@@ -105,7 +105,7 @@ export async function atualizarModeloAction(id: string, data: Partial<Pick<Model
       updates.nome = data.nome.trim()
     }
 
-    if (data.conteudo !== undefined) updates.conteudo = data.conteudo
+    if (data.campos !== undefined) updates.campos = data.campos
 
     if (data.ativo !== undefined) {
       if (data.ativo === true) {
@@ -113,7 +113,7 @@ export async function atualizarModeloAction(id: string, data: Partial<Pick<Model
           .from('modelos')
           .select('ativo')
           .eq('id', id)
-          .single()
+          .single() as unknown as { data: { ativo: boolean } | null }
 
         if (!current?.ativo) {
           const { count } = await supabase
@@ -131,7 +131,7 @@ export async function atualizarModeloAction(id: string, data: Partial<Pick<Model
 
     const { data: modeloAtualizado, error } = await supabase
       .from('modelos')
-      .update(updates)
+      .update(updates as never)
       .eq('id', id)
       .select('*')
       .single()
@@ -150,9 +150,7 @@ export async function excluirModeloAction(id: string): Promise<ApiResponse<null>
     const profile = await getUserProfile()
     if (!profile) return { error: 'Não autenticado' }
 
-    if (!can.createModelo(profile.role)) {
-      return { error: 'Sem permissão para excluir modelos' }
-    }
+    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
 
     const supabase = await createClient()
     const { error } = await supabase

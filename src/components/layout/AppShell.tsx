@@ -140,17 +140,17 @@ export function AppShell({ user, children }: AppShellProps) {
       {/* Sidebar — mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in lg:hidden"
           aria-modal="true"
           role="dialog"
           aria-label="Menu de navegação"
         >
           <div
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 bg-black/30 animate-fade-in"
             onClick={() => setSidebarOpen(false)}
             aria-hidden="true"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-64 flex-col bg-white shadow-xl dark:bg-slate-800">
+          <aside className="absolute inset-y-0 left-0 flex w-64 flex-col bg-white shadow-xl animate-slide-up dark:bg-slate-800">
             <SidebarContent />
           </aside>
         </div>

@@ -25,7 +25,7 @@ export function useCreateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: { nome: string; ativo?: boolean }) => {
+    mutationFn: async (data: { nome: string; campos?: any[]; ativo?: boolean }) => {
       const result = await criarModeloAction(data)
       if (result.error) throw new Error(result.error)
       return result.data!
@@ -44,7 +44,7 @@ export function useUpdateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Pick<Modelo, 'nome' | 'ativo'>> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Pick<Modelo, 'nome' | 'ativo' | 'campos'>> }) => {
       const result = await atualizarModeloAction(id, data)
       if (result.error) throw new Error(result.error)
       return result.data!

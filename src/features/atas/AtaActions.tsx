@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit2, Printer, Trash2 } from 'lucide-react'
+import { ArrowLeft, Edit2, Printer, Share2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { can } from '@/lib/permissions'
 import { useDeleteAta } from '@/hooks/useAtas'
@@ -38,6 +38,15 @@ export function AtaActions({ ataId, role }: AtaActionsProps) {
             <Printer className="h-4 w-4" aria-hidden="true" />
             Imprimir
           </Link>
+          {can.shareAta(role) && (
+            <Link
+              href={`/atas/${ataId}/compartilhar`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              Compartilhar
+            </Link>
+          )}
           {can.editAta(role) && (
             <>
               <Link

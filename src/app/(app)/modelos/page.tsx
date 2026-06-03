@@ -81,9 +81,9 @@ export default function ModelosListPage() {
                     <button
                       onClick={() => setDeleteTarget({ id: modelo.id, nome: modelo.nome })}
                       className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      title="Excluir"
+                      aria-label={`Excluir modelo "${modelo.nome}"`}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </td>
                 </tr>

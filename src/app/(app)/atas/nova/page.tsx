@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
-import type { UserRole } from '@/types/domain'
+import type { UserRole, ModeloCampo } from '@/types/domain'
 import { NovaAtaClient } from './NovaAtaClient'
 
 export const metadata: Metadata = { title: 'Nova ata' }
@@ -17,6 +17,7 @@ type ProfileCheck = {
 type ModeloOption = {
   id: string
   nome: string
+  campos: ModeloCampo[]
 }
 
 export default async function NovaAtaPage() {
@@ -31,22 +32,18 @@ export default async function NovaAtaPage() {
     .overrideTypes<ProfileCheck, { merge: false }>()
 
   if (!profile?.ala_id) redirect('/completar-cadastro')
-
   if (!can.createAta(profile.role)) redirect('/atas')
 
   const { data: modelos } = await supabase
     .from('modelos')
-    .select('id, nome')
+    .select('id, nome, campos')
     .eq('ativo', true)
     .overrideTypes<ModeloOption[], { merge: false }>()
 
   if (!modelos?.length) {
     return (
       <div className="max-w-3xl">
-        <Link
-          href="/atas"
-          className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
-        >
+        <Link href="/atas" className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Voltar
         </Link>
@@ -60,16 +57,11 @@ export default async function NovaAtaPage() {
 
   return (
     <div className="max-w-3xl">
-      <Link
-        href="/atas"
-        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
-      >
+      <Link href="/atas" className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Voltar
       </Link>
-
       <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Nova ata</h1>
-
       <NovaAtaClient modelos={modelos} />
     </div>
   )
