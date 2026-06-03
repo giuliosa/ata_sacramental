@@ -24,7 +24,7 @@ export const can = {
   viewAta:   (_role: UserRole) => true,
   printAta:  (_role: UserRole) => true,
 
-  createModelo:    (role: UserRole) => role === 'adm',
+  createModelo:    (role: UserRole) => role === 'adm' || role === 'editor',
   manageUsers:     (role: UserRole) => role === 'adm',
   manageUnidades:  (role: UserRole) => role === 'adm',
 

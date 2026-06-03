@@ -67,12 +67,15 @@ export async function criarModeloAction(data: {
       }
     }
 
+    if (!profile.ala_id) return { error: 'Você precisa estar vinculado a uma ala' }
+
     const { data: novoModelo, error } = await supabase
       .from('modelos')
       .insert({
         nome: data.nome.trim(),
         campos: data.campos ?? [],
         criado_por: profile.id,
+        ala_id: profile.ala_id,
         ativo: willBeActive,
       } as never)
       .select('*')
@@ -170,6 +173,8 @@ export async function duplicarModeloAction(id: string): Promise<ApiResponse<Mode
       return { error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
     }
 
+    if (!profile.ala_id) return { error: 'Você precisa estar vinculado a uma ala' }
+
     const novoNome = `${original.nome} (cópia)`
 
     const { data: novoModelo, error } = await supabase
@@ -178,6 +183,7 @@ export async function duplicarModeloAction(id: string): Promise<ApiResponse<Mode
         nome: novoNome,
         campos: original.campos ?? [],
         criado_por: profile.id,
+        ala_id: profile.ala_id,
         ativo: true,
       } as never)
       .select('*')

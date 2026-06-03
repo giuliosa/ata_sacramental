@@ -39,6 +39,7 @@ export type Modelo = {
   nome: string
   campos: ModeloCampo[]
   criado_por: string
+  ala_id: string
   ativo: boolean
   created_at: string
 }

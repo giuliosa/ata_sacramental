@@ -6,7 +6,7 @@ insert into alas (id, nome, estaca_id) values
   ('00000000-0000-0000-0000-000000000002', 'Ala Jardim Atlântico', '00000000-0000-0000-0000-000000000001')
 on conflict (nome, estaca_id) do nothing;
 
-insert into modelos (id, nome, campos, criado_por, ativo)
+insert into modelos (id, nome, campos, criado_por, ala_id, ativo)
 select
   '00000000-0000-0000-0000-000000000010',
   'Modelo Padrão — Reunião Sacramental',
@@ -31,7 +31,8 @@ select
     {"id":"oracao_final","label":"Oração de encerramento","type":"text","required":true,"order":18}
   ]'::jsonb,
   id,
+  (select ala_id from users where id = u.id limit 1),
   true
-from users
-where role = 'adm'
+from users u
+where (role = 'adm' or role = 'editor')
 limit 1;
