@@ -128,3 +128,129 @@ export async function criarAlaAction(data: { nome: string; estaca_id: string }):
     return { error: error.message || 'Erro ao criar ala' }
   }
 }
+
+export async function atualizarEstacaAction(id: string, nome: string): Promise<ApiResponse<Estaca>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { error: 'Sem permissão para gerenciar unidades' }
+    if (!nome || !nome.trim()) return { error: 'Nome da estaca é obrigatório' }
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('estacas')
+      .update({ nome: nome.trim() } as never)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      if (error.code === '23505') return { error: 'Estaca já existe' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: data as unknown as Estaca }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao atualizar estaca' }
+  }
+}
+
+export async function excluirEstacaAction(id: string): Promise<ApiResponse<null>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { error: 'Sem permissão para gerenciar unidades' }
+
+    const supabase = await createClient()
+    const { error } = await supabase
+      .from('estacas')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (error.code === '23503') return { error: 'Estaca possui alas vinculadas. Remova as alas primeiro.' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: null }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao excluir estaca' }
+  }
+}
+
+export async function atualizarAlaAction(id: string, data: { nome: string; estaca_id: string }): Promise<ApiResponse<Ala>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { error: 'Sem permissão para gerenciar unidades' }
+    if (!data.nome || !data.nome.trim()) return { error: 'Nome da ala é obrigatório' }
+    if (!data.estaca_id) return { error: 'Estaca é obrigatória' }
+
+    const supabase = await createClient()
+    const { data: updated, error } = await supabase
+      .from('alas')
+      .update({ nome: data.nome.trim(), estaca_id: data.estaca_id } as never)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      if (error.code === '23505') return { error: 'Já existe uma ala com este nome nesta estaca' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: updated as unknown as Ala }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao atualizar ala' }
+  }
+}
+
+export async function excluirAlaAction(id: string): Promise<ApiResponse<null>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { error: 'Sem permissão para gerenciar unidades' }
+
+    const supabase = await createClient()
+    const { error } = await supabase
+      .from('alas')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (error.code === '23503') return { error: 'Ala possui atas vinculadas. Remova as atas primeiro.' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: null }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao excluir ala' }
+  }
+}
+
+export async function alterarMinhaAlaAction(alaId: string | null): Promise<ApiResponse<User>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('users')
+      .update({ ala_id: alaId } as never)
+      .eq('id', profile.id)
+      .select('*, ala:alas(*, estaca:estacas(*))')
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/admin/unidades')
+    revalidatePath('/dashboard')
+    return { data: data as unknown as User }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao alterar ala' }
+  }
+}

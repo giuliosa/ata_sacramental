@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { ModeloCampo } from '@/types/domain'
 
 /**
  * Combina classes Tailwind de forma segura, resolvendo conflitos.
@@ -31,4 +32,9 @@ export function parseDateBR(brDate: string): string {
  */
 export function generateId(): string {
   return Math.random().toString(36).slice(2, 9)
+}
+
+export function normalizeCampos(raw: unknown): ModeloCampo[] {
+  if (Array.isArray(raw)) return raw
+  return []
 }

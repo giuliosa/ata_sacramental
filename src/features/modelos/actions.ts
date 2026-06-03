@@ -145,6 +145,53 @@ export async function atualizarModeloAction(
   }
 }
 
+export async function duplicarModeloAction(id: string): Promise<ApiResponse<Modelo>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { error: 'Não autenticado' }
+    if (!can.createModelo(profile.role)) return { error: 'Sem permissão' }
+
+    const supabase = await createClient()
+
+    const { data: original } = await supabase
+      .from('modelos')
+      .select('nome, campos')
+      .eq('id', id)
+      .single() as unknown as { data: { nome: string; campos: unknown } | null }
+
+    if (!original) return { error: 'Modelo não encontrado' }
+
+    const { count } = await supabase
+      .from('modelos')
+      .select('*', { count: 'exact', head: true })
+      .eq('ativo', true)
+
+    if ((count ?? 0) >= MAX_MODELOS) {
+      return { error: `Limite de ${MAX_MODELOS} modelos ativos atingido.` }
+    }
+
+    const novoNome = `${original.nome} (cópia)`
+
+    const { data: novoModelo, error } = await supabase
+      .from('modelos')
+      .insert({
+        nome: novoNome,
+        campos: original.campos ?? [],
+        criado_por: profile.id,
+        ativo: true,
+      } as never)
+      .select('*')
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/modelos')
+    return { data: novoModelo as unknown as Modelo }
+  } catch (error: any) {
+    return { error: error.message || 'Erro ao duplicar modelo' }
+  }
+}
+
 export async function excluirModeloAction(id: string): Promise<ApiResponse<null>> {
   try {
     const profile = await getUserProfile()

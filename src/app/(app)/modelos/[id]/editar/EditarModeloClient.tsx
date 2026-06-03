@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, ArrowUp, ArrowDown, Loader2 } from 'lucide-react'
-import { useCreateModelo } from '@/hooks/useModelos'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { useUpdateModelo } from '@/hooks/useModelos'
 import { generateId } from '@/lib/utils'
 import type { ModeloCampo, FieldType } from '@/types/domain'
 
@@ -20,15 +22,23 @@ const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'list', label: 'Lista' },
 ]
 
+type EditarModeloClientProps = {
+  modeloId: string
+  defaultNome: string
+  defaultCampos: ModeloCampo[]
+  defaultAtivo: boolean
+}
+
 function createEmptyField(order: number): ModeloCampo {
   return { id: generateId(), label: '', type: 'text', required: false, order }
 }
 
-export default function NovoModeloPage() {
+export function EditarModeloClient({ modeloId, defaultNome, defaultCampos, defaultAtivo }: EditarModeloClientProps) {
   const router = useRouter()
-  const { mutate: createModelo, isPending } = useCreateModelo()
-  const [nome, setNome] = useState('')
-  const [campos, setCampos] = useState<ModeloCampo[]>([createEmptyField(0)])
+  const { mutate: updateModelo, isPending } = useUpdateModelo()
+  const [nome, setNome] = useState(defaultNome)
+  const [campos, setCampos] = useState<ModeloCampo[]>(defaultCampos.length > 0 ? defaultCampos : [createEmptyField(0)])
+  const [ativo, setAtivo] = useState(defaultAtivo)
 
   function updateField(index: number, partial: Partial<ModeloCampo>) {
     setCampos(prev => prev.map((f, i) => i === index ? { ...f, ...partial } : f))
@@ -66,22 +76,23 @@ export default function NovoModeloPage() {
       order: i,
     }))
 
-    createModelo(
-      { nome: nome.trim(), campos: validCampos },
+    updateModelo(
+      { id: modeloId, data: { nome: nome.trim(), campos: validCampos, ativo } },
       { onSuccess: () => router.push('/modelos') }
     )
   }
 
   return (
     <div className="max-w-2xl">
-      <button
-        onClick={() => router.push('/modelos')}
+      <Link
+        href="/modelos"
         className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
       >
-        ← Voltar
-      </button>
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Voltar
+      </Link>
 
-      <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Novo modelo</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Editar modelo</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
@@ -188,21 +199,34 @@ export default function NovoModeloPage() {
           </div>
         </div>
 
+        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={ativo}
+              onChange={e => setAtivo(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
+            />
+            <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
+              Modelo ativo
+            </span>
+          </label>
+        </div>
+
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => router.push('/modelos')}
+          <Link
+            href="/modelos"
             className="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Cancelar
-          </button>
+          </Link>
           <button
             type="submit"
             disabled={isPending || !nome.trim()}
             className="flex items-center gap-2 rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Criar modelo
+            Salvar alterações
           </button>
         </div>
       </form>

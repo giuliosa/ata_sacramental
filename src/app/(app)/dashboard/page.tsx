@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { formatDateBR } from '@/lib/utils'
+import { formatDateBR, normalizeCampos } from '@/lib/utils'
 import { formatFieldValue } from '@/lib/print-utils'
 import { can } from '@/lib/permissions'
 import type { Json } from '@/types/supabase'
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
           <ul className="divide-y divide-gray-100 dark:divide-slate-700">
             {recentAtas.map(ata => {
               const conteudo = ata.conteudo as Record<string, any>
-              const campos = (ata.modelo?.campos ?? []) as any[]
+              const campos = normalizeCampos(ata.modelo?.campos)
               const firstTextField = campos.find((c: any) => c.type === 'text')
               const primaryInfo = firstTextField ? conteudo[firstTextField.id] : null
 

@@ -2,9 +2,10 @@ import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { normalizeCampos } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
-import type { UserRole, ModeloCampo } from '@/types/domain'
+import type { UserRole } from '@/types/domain'
 import type { Json } from '@/types/supabase'
 import { EditarAtaClient } from './EditarAtaClient'
 
@@ -54,7 +55,7 @@ export default async function EditarAtaPage({ params }: { params: Promise<{ id: 
     .single()
     .overrideTypes<{ campos: Json }, { merge: false }>()
 
-  const campos = (modelo?.campos ?? []) as ModeloCampo[]
+  const campos = normalizeCampos(modelo?.campos)
 
   return (
     <div className="max-w-3xl">

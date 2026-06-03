@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { formatDateBR } from '@/lib/utils'
+import { formatDateBR, normalizeCampos } from '@/lib/utils'
 import { formatFieldValue } from '@/lib/print-utils'
 import type { ModeloCampo } from '@/types/domain'
 import type { Json } from '@/types/supabase'
@@ -55,7 +55,7 @@ export default async function AtaDetailPage({ params }: { params: Promise<{ id: 
     .single()
     .overrideTypes<{ nome: string; campos: Json }, { merge: false }>()
 
-  const campos = (modelo?.campos ?? []) as ModeloCampo[]
+  const campos = normalizeCampos(modelo?.campos) as ModeloCampo[]
   const conteudo = ata.conteudo as Record<string, any>
   const role = profile?.role ?? 'reader'
 

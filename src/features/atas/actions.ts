@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient, getUserProfile } from '@/lib/supabase/server'
 import { criarAtaSchema, editarAtaSchema, type CriarAtaFormData, type EditarAtaFormData } from '@/lib/schemas'
 import { can } from '@/lib/permissions'
+import { normalizeCampos } from '@/lib/utils'
 import type { Ata, ApiResponse, ModeloCampo } from '@/types/domain'
 
 function validarConteudo(conteudo: Record<string, unknown>, campos: ModeloCampo[]): string | null {
@@ -58,7 +59,7 @@ export async function criarAtaAction(data: CriarAtaFormData): Promise<ApiRespons
       .single() as unknown as { data: { campos: ModeloCampo[] } | null }
     
     if (!modelo) return { error: 'Modelo não encontrado' }
-    const campos = modelo.campos
+    const campos = normalizeCampos(modelo.campos)
     const validationError = validarConteudo(parsed.data.conteudo, campos)
     if (validationError) return { error: validationError }
 
@@ -112,7 +113,7 @@ export async function atualizarAtaAction(id: string, data: EditarAtaFormData): P
           .single() as unknown as { data: { campos: ModeloCampo[] } | null }
         
         if (modelo) {
-          const campos = modelo.campos
+          const campos = normalizeCampos(modelo.campos)
           const validationError = validarConteudo(parsed.data.conteudo, campos)
           if (validationError) return { error: validationError }
         }

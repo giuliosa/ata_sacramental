@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { normalizeCampos } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
 import type { UserRole, ModeloCampo } from '@/types/domain'
@@ -62,7 +63,7 @@ export default async function NovaAtaPage() {
         Voltar
       </Link>
       <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Nova ata</h1>
-      <NovaAtaClient modelos={modelos} />
+      <NovaAtaClient modelos={modelos?.map(m => ({ ...m, campos: normalizeCampos(m.campos) })) ?? []} />
     </div>
   )
 }
