@@ -1,9 +1,9 @@
-/**
- * Este arquivo será gerado automaticamente pelo Supabase CLI:
+﻿/**
+ * Este arquivo ser├í gerado automaticamente pelo Supabase CLI:
  *   npm run db:generate
  *
- * O shape abaixo é um placeholder que reflete a estrutura esperada do banco.
- * Substitua pelo arquivo gerado após rodar as migrations.
+ * O shape abaixo ├® um placeholder que reflete a estrutura esperada do banco.
+ * Substitua pelo arquivo gerado ap├│s rodar as migrations.
  */
 
 export type Json =
@@ -103,24 +103,27 @@ export type Database = {
         Row: {
           id: string
           nome: string
-          conteudo: Json
+          campos: Json
           criado_por: string
+          ala_id: string
           ativo: boolean
           created_at: string
         }
         Insert: {
           id?: string
           nome: string
-          conteudo: Json
+          campos: Json
           criado_por: string
+          ala_id: string
           ativo?: boolean
           created_at?: string
         }
         Update: {
           id?: string
           nome?: string
-          conteudo?: Json
+          campos?: Json
           criado_por?: string
+          ala_id?: string
           ativo?: boolean
           created_at?: string
         }
@@ -130,6 +133,13 @@ export type Database = {
             columns: ['criado_por']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'modelos_ala_id_fkey'
+            columns: ['ala_id']
+            isOneToOne: false
+            referencedRelation: 'alas'
             referencedColumns: ['id']
           },
         ]
@@ -198,3 +208,4 @@ export type Database = {
     CompositeTypes: Record<string, never>
   }
 }
+

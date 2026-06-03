@@ -1,16 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, BookOpen, Plus, ToggleLeft, ToggleRight, Trash2 } from 'lucide-react'
+import { Loader2, BookOpen, Plus, ToggleLeft, ToggleRight, Trash2, Edit2, Copy } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { useModelos, useUpdateModelo, useDeleteModelo } from '@/hooks/useModelos'
+import { useModelos, useUpdateModelo, useDeleteModelo, useDuplicarModelo } from '@/hooks/useModelos'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 
 export default function ModelosListPage() {
   const { data: modelos, isLoading } = useModelos()
   const { mutate: updateModelo } = useUpdateModelo()
   const { mutate: deleteModelo } = useDeleteModelo()
+  const { mutate: duplicarModelo } = useDuplicarModelo()
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; nome: string } | null>(null)
 
   return (
@@ -78,13 +79,29 @@ export default function ModelosListPage() {
                     </button>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setDeleteTarget({ id: modelo.id, nome: modelo.nome })}
-                      className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      title="Excluir"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/modelos/${modelo.id}/editar`}
+                        className="inline-flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
+                        aria-label={`Editar modelo "${modelo.nome}"`}
+                      >
+                        <Edit2 className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                      <button
+                        onClick={() => duplicarModelo(modelo.id)}
+                        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
+                        aria-label={`Duplicar modelo "${modelo.nome}"`}
+                      >
+                        <Copy className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: modelo.id, nome: modelo.nome })}
+                        className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        aria-label={`Excluir modelo "${modelo.nome}"`}
+                      >
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

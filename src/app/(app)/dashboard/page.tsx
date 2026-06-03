@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { formatDateBR } from '@/lib/utils'
+import { formatDateBR, normalizeCampos } from '@/lib/utils'
+import { formatFieldValue } from '@/lib/print-utils'
 import { can } from '@/lib/permissions'
 import type { Json } from '@/types/supabase'
 import type { UserRole } from '@/types/domain'
@@ -17,6 +18,8 @@ type RecentAta = {
   id: string
   data_reuniao: string
   conteudo: Json
+  modelo_id: string
+  modelo: { nome: string; campos: Json } | null
 }
 
 export const metadata: Metadata = { title: 'Início' }
@@ -32,33 +35,46 @@ export default async function DashboardPage() {
     .single()
     .overrideTypes<DashboardProfile, { merge: false }>()
 
-  const { data: atasRecentes } = await supabase
+  if (!profile?.ala_id) {
+    return (
+      <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-slate-100">Bem-vindo!</h1>
+        <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
+          Complete seu cadastro para começar.
+        </p>
+        <Link
+          href="/completar-cadastro"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+        >
+          Completar cadastro
+        </Link>
+      </div>
+    )
+  }
+
+  const { data: recentAtas } = await supabase
     .from('atas')
-    .select('id, data_reuniao, conteudo')
-    .eq('ala_id', profile!.ala_id!)
+    .select('id, data_reuniao, conteudo, modelo_id, modelo:modelos!inner(nome, campos)')
+    .eq('ala_id', profile.ala_id)
     .order('data_reuniao', { ascending: false })
     .limit(5)
     .overrideTypes<RecentAta[], { merge: false }>()
 
-  const role = profile?.role ?? 'reader'
+  const canCreate = can.createAta(profile.role)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-slate-100">Início</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-            {profile?.ala
-              ? `Ala ${profile.ala.nome}`
-              : 'Bem-vindo'}
+            {profile.ala?.nome}
           </p>
         </div>
-
-        {can.createAta(role) && (
+        {canCreate && (
           <Link
             href="/atas/nova"
-            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
+            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Nova ata
@@ -66,66 +82,57 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Atas recentes */}
-      <section aria-labelledby="atas-recentes-title">
-        <h2
-          id="atas-recentes-title"
-          className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500"
-        >
-          Atas recentes
-        </h2>
+      <div className="rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+        <div className="border-b border-gray-100 px-6 py-4 dark:border-slate-700">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Atas recentes</h2>
+        </div>
 
-        {!atasRecentes?.length ? (
-          <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
-            <p className="text-sm text-gray-500 dark:text-slate-400">Nenhuma ata registrada ainda.</p>
-            {can.createAta(role) && (
+        {!recentAtas?.length ? (
+          <div className="px-6 py-10 text-center">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Nenhuma ata encontrada.</p>
+            {canCreate && (
               <Link
                 href="/atas/nova"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+                className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
               >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                Criar primeira ata
+                <Plus className="h-3.5 w-3.5" /> Criar primeira ata
               </Link>
             )}
           </div>
         ) : (
-          <ul className="space-y-2" role="list">
-            {atasRecentes.map(ata => {
-              const conteudo = ata.conteudo as Record<string, unknown>
+          <ul className="divide-y divide-gray-100 dark:divide-slate-700">
+            {recentAtas.map(ata => {
+              const conteudo = ata.conteudo as Record<string, any>
+              const campos = normalizeCampos(ata.modelo?.campos)
+              const firstTextField = campos.find((c: any) => c.type === 'text')
+              const primaryInfo = firstTextField ? conteudo[firstTextField.id] : null
+
               return (
                 <li key={ata.id}>
                   <Link
                     href={`/atas/${ata.id}`}
-                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 transition-colors hover:border-brand-300 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-600 dark:hover:bg-brand-900/20"
+                    className="flex items-center justify-between px-6 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-slate-700/50"
                   >
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-slate-100">
-                        Reunião de {formatDateBR(ata.data_reuniao)}
+                        {formatDateBR(ata.data_reuniao)}
                       </p>
-                      {typeof conteudo?.presidida_por === 'string' && conteudo.presidida_por && (
+                      {primaryInfo && (
                         <p className="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
-                          Presidida por {conteudo.presidida_por}
+                          {formatFieldValue(primaryInfo)}
                         </p>
                       )}
                     </div>
-                    <span className="text-xs text-gray-400 dark:text-slate-500" aria-hidden="true">→</span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500">
+                      {ata.modelo?.nome}
+                    </span>
                   </Link>
                 </li>
               )
             })}
           </ul>
         )}
-      </section>
-
-      {/* Link para lista completa */}
-      {(atasRecentes?.length ?? 0) > 0 && (
-        <Link
-          href="/atas"
-          className="inline-flex items-center text-sm text-brand-600 hover:text-brand-700"
-        >
-          Ver todas as atas →
-        </Link>
-      )}
+      </div>
     </div>
   )
 }

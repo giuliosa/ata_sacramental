@@ -6,18 +6,23 @@ import {
   BookOpen,
   LayoutDashboard,
   FileText,
-  Settings,
+  Users,
+  Building2,
   LogOut,
   Menu,
   X,
   ChevronRight,
+  Pencil,
+  Loader2,
   type LucideIcon,
 } from 'lucide-react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { can } from '@/lib/permissions'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { useUnidades, useAlterarMinhaAla } from '@/hooks/useAdmin'
 import type { User } from '@/types/domain'
 
 type AppShellProps = {
@@ -36,16 +41,29 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard',    label: 'Início',    icon: LayoutDashboard },
   { href: '/atas',         label: 'Atas',      icon: FileText },
   { href: '/modelos',      label: 'Modelos',   icon: BookOpen, adminOnly: true },
-  { href: '/admin/usuarios',  label: 'Usuários', icon: Settings, adminOnly: true },
-  { href: '/admin/unidades',  label: 'Unidades', icon: Settings, adminOnly: true },
+  { href: '/admin/usuarios',  label: 'Usuários', icon: Users, adminOnly: true },
+  { href: '/admin/unidades',  label: 'Unidades', icon: Building2, adminOnly: true },
 ]
 
 export function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [alterandoAla, setAlterandoAla] = useState(false)
   const isAdm = can.manageUsers(user.role)
+  const { data: unidades } = useUnidades()
+  const { mutate: alterarAla, isPending: alterandoAlaLoading } = useAlterarMinhaAla()
 
   const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || isAdm)
+
+  function handleAlterarAla(alaId: string) {
+    alterarAla(alaId === '' ? null : alaId, {
+      onSuccess: () => {
+        setAlterandoAla(false)
+        router.refresh()
+      },
+    })
+  }
 
   async function handleLogout() {
     const supabase = createBrowserSupabaseClient()
@@ -66,12 +84,39 @@ export function AppShell({ user, children }: AppShellProps) {
       </div>
 
       {/* Ala info */}
-      {user.ala && (
-        <div className="border-b border-gray-100 px-6 py-3 dark:border-slate-800">
+      <div className="border-b border-gray-100 px-6 py-3 dark:border-slate-800">
+        <div className="flex items-center justify-between">
           <p className="text-xs text-gray-400">Unidade</p>
-          <p className="mt-0.5 text-sm font-medium text-gray-700 dark:text-slate-300">{user.ala.nome}</p>
+          <button
+            onClick={() => setAlterandoAla(!alterandoAla)}
+            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            aria-label="Alterar unidade"
+          >
+            <Pencil className="h-3 w-3" />
+          </button>
         </div>
-      )}
+        {alterandoAla ? (
+          <div className="mt-1.5 flex items-center gap-2">
+            <select
+              value={user.ala?.id ?? ''}
+              onChange={e => handleAlterarAla(e.target.value)}
+              className="block w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+              disabled={alterandoAlaLoading}
+              autoFocus
+            >
+              <option value="">Nenhuma</option>
+              {unidades?.alas?.map(a => (
+                <option key={a.id} value={a.id}>{a.nome}</option>
+              ))}
+            </select>
+            {alterandoAlaLoading && <Loader2 className="h-4 w-4 animate-spin shrink-0 text-gray-400" />}
+          </div>
+        ) : (
+          <p className="mt-0.5 text-sm font-medium text-gray-700 dark:text-slate-300">
+            {user.ala?.nome ?? 'Nenhuma'}
+          </p>
+        )}
+      </div>
 
       {/* Nav */}
       <nav className="flex-1 space-y-0.5 px-3 py-4" aria-label="Navegação principal">
@@ -140,17 +185,17 @@ export function AppShell({ user, children }: AppShellProps) {
       {/* Sidebar — mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in lg:hidden"
           aria-modal="true"
           role="dialog"
           aria-label="Menu de navegação"
         >
           <div
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 bg-black/30 animate-fade-in"
             onClick={() => setSidebarOpen(false)}
             aria-hidden="true"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-64 flex-col bg-white shadow-xl dark:bg-slate-800">
+          <aside className="absolute inset-y-0 left-0 flex w-64 flex-col bg-white shadow-xl animate-slide-up dark:bg-slate-800">
             <SidebarContent />
           </aside>
         </div>

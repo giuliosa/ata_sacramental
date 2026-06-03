@@ -2,9 +2,10 @@ import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { normalizeCampos } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
-import type { UserRole, AtaConteudo } from '@/types/domain'
+import type { UserRole } from '@/types/domain'
 import type { Json } from '@/types/supabase'
 import { EditarAtaClient } from './EditarAtaClient'
 
@@ -14,6 +15,7 @@ type AtaEditView = {
   id: string
   data_reuniao: string
   conteudo: Json
+  modelo_id: string
   ala_id: string
 }
 
@@ -38,7 +40,7 @@ export default async function EditarAtaPage({ params }: { params: Promise<{ id: 
 
   const { data: ata } = await supabase
     .from('atas')
-    .select('id, data_reuniao, conteudo, ala_id')
+    .select('id, data_reuniao, conteudo, modelo_id, ala_id')
     .eq('id', id)
     .eq('ala_id', profile!.ala_id!)
     .single()
@@ -46,21 +48,26 @@ export default async function EditarAtaPage({ params }: { params: Promise<{ id: 
 
   if (!ata) notFound()
 
+  const { data: modelo } = await supabase
+    .from('modelos')
+    .select('campos')
+    .eq('id', ata.modelo_id)
+    .single()
+    .overrideTypes<{ campos: Json }, { merge: false }>()
+
+  const campos = normalizeCampos(modelo?.campos)
+
   return (
     <div className="max-w-3xl">
-      <Link
-        href={`/atas/${id}`}
-        className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300"
-      >
+      <Link href={`/atas/${id}`} className="no-print mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Voltar
       </Link>
-
       <h1 className="mb-6 text-2xl font-semibold text-gray-900 dark:text-slate-100">Editar ata</h1>
-
       <EditarAtaClient
         ataId={ata.id}
-        defaultConteudo={ata.conteudo as unknown as AtaConteudo}
+        defaultConteudo={ata.conteudo as Record<string, any>}
+        campos={campos}
       />
     </div>
   )

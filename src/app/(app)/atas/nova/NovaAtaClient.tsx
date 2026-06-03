@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useCreateAta } from '@/hooks/useAtas'
-import { AtaForm } from '@/features/atas/AtaForm'
-import type { AtaConteudoFormData } from '@/lib/schemas'
+import { DynamicAtaForm } from '@/features/atas/AtaForm'
+import type { ModeloCampo } from '@/types/domain'
 
 type ModeloOption = {
   id: string
   nome: string
+  campos: ModeloCampo[]
 }
 
 type NovaAtaClientProps = {
@@ -15,21 +16,20 @@ type NovaAtaClientProps = {
 }
 
 export function NovaAtaClient({ modelos }: NovaAtaClientProps) {
-  const [modeloId, setModeloId] = useState(modelos[0]?.id ?? '')
+  const [selectedModelo, setSelectedModelo] = useState<ModeloOption>(modelos[0])
   const [showForm, setShowForm] = useState(false)
   const { mutate, isPending } = useCreateAta()
 
-  function handleSubmit(conteudo: AtaConteudoFormData) {
-    if (!modeloId) return
-
+  function handleSubmit(conteudo: Record<string, any>) {
+    if (!selectedModelo) return
     const today = new Date()
     const dataISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    mutate({ data_reuniao: dataISO, modelo_id: selectedModelo.id, conteudo })
+  }
 
-    mutate({
-      data_reuniao: dataISO,
-      modelo_id: modeloId,
-      conteudo,
-    })
+  function handleModeloChange(id: string) {
+    const modelo = modelos.find(m => m.id === id)
+    if (modelo) setSelectedModelo(modelo)
   }
 
   if (!showForm) {
@@ -41,8 +41,8 @@ export function NovaAtaClient({ modelos }: NovaAtaClientProps) {
           </label>
           <select
             id="modelo"
-            value={modeloId}
-            onChange={e => setModeloId(e.target.value)}
+            value={selectedModelo?.id ?? ''}
+            onChange={e => handleModeloChange(e.target.value)}
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
           >
             {modelos.map(m => (
@@ -50,11 +50,10 @@ export function NovaAtaClient({ modelos }: NovaAtaClientProps) {
             ))}
           </select>
         </div>
-
         <div className="flex justify-end">
           <button
             onClick={() => setShowForm(true)}
-            disabled={!modeloId}
+            disabled={!selectedModelo}
             className="rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Continuar
@@ -64,5 +63,11 @@ export function NovaAtaClient({ modelos }: NovaAtaClientProps) {
     )
   }
 
-  return <AtaForm onSubmit={handleSubmit} isSubmitting={isPending} />
+  return (
+    <DynamicAtaForm
+      campos={selectedModelo.campos}
+      onSubmit={handleSubmit}
+      isSubmitting={isPending}
+    />
+  )
 }

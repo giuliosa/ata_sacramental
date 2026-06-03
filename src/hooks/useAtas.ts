@@ -4,12 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { CriarAtaFormData, EditarAtaFormData } from '@/lib/schemas'
-import { 
-  criarAtaAction, 
-  atualizarAtaAction, 
+import {
+  criarAtaAction,
+  atualizarAtaAction,
   excluirAtaAction,
   buscarAtasAction,
-  buscarAtaAction
+  buscarAtaAction,
 } from '@/features/atas/actions'
 
 export function useAtas() {

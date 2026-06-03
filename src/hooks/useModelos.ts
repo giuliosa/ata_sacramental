@@ -3,10 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Modelo } from '@/types/domain'
-import { 
-  criarModeloAction, 
-  atualizarModeloAction, 
+import {
+  criarModeloAction,
+  atualizarModeloAction,
   excluirModeloAction,
+  duplicarModeloAction,
   buscarModelosAction
 } from '@/features/modelos/actions'
 
@@ -25,7 +26,7 @@ export function useCreateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: { nome: string; ativo?: boolean }) => {
+    mutationFn: async (data: { nome: string; campos?: any[]; ativo?: boolean }) => {
       const result = await criarModeloAction(data)
       if (result.error) throw new Error(result.error)
       return result.data!
@@ -44,7 +45,7 @@ export function useUpdateModelo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Pick<Modelo, 'nome' | 'ativo'>> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Pick<Modelo, 'nome' | 'ativo' | 'campos'>> }) => {
       const result = await atualizarModeloAction(id, data)
       if (result.error) throw new Error(result.error)
       return result.data!
@@ -52,6 +53,25 @@ export function useUpdateModelo() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modelos'] })
       toast.success('Modelo atualizado com sucesso')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export function useDuplicarModelo() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const result = await duplicarModeloAction(id)
+      if (result.error) throw new Error(result.error)
+      return result.data!
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['modelos'] })
+      toast.success('Modelo duplicado com sucesso')
     },
     onError: (error: Error) => {
       toast.error(error.message)

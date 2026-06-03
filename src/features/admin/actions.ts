@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient, getUserProfile } from '@/lib/supabase/server'
 import { can } from '@/lib/permissions'
+import { handleApiError } from '@/lib/utils'
 import type { User, Estaca, Ala, UpdateUsuarioData, ApiResponse, UnidadesData } from '@/types/domain'
 
 export async function buscarUsuariosAction(): Promise<ApiResponse<User[]>> {
@@ -14,9 +15,9 @@ export async function buscarUsuariosAction(): Promise<ApiResponse<User[]>> {
       .order('name')
 
     if (error) throw error
-    return { data: data as unknown as User[] }
+    return { data: data as unknown as User[], error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao buscar usuários' }
+    return handleApiError(error, 'Erro ao buscar usuários')
   }
 }
 
@@ -31,30 +32,31 @@ export async function buscarUnidadesAction(): Promise<ApiResponse<UnidadesData>>
     if (e1) throw e1
     if (e2) throw e2
 
-    return { 
-      data: { 
-        estacas: estacas as Estaca[], 
-        alas: alas as Ala[] 
-      } 
+    return {
+      data: {
+        estacas: estacas as Estaca[],
+        alas: alas as Ala[]
+      },
+      error: null
     }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao buscar unidades' }
+    return handleApiError(error, 'Erro ao buscar unidades')
   }
 }
 
 export async function atualizarUsuarioAction(id: string, data: UpdateUsuarioData): Promise<ApiResponse<User>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
     if (!can.manageUsers(profile.role)) {
-      return { error: 'Sem permissão para gerenciar usuários' }
+      return { data: null, error: 'Sem permissão para gerenciar usuários' }
     }
 
     const supabase = await createClient()
     const { data: usuarioAtualizado, error } = await supabase
       .from('users')
-      .update(data)
+      .update(data as never)
       .eq('id', id)
       .select('*')
       .single()
@@ -62,69 +64,195 @@ export async function atualizarUsuarioAction(id: string, data: UpdateUsuarioData
     if (error) throw error
 
     revalidatePath('/admin/usuarios')
-    return { data: usuarioAtualizado as unknown as User }
+    return { data: usuarioAtualizado as unknown as User, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao atualizar usuário' }
+    return handleApiError(error, 'Erro ao atualizar usuário')
   }
 }
 
 export async function criarEstacaAction(nome: string): Promise<ApiResponse<Estaca>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
     if (!can.manageUnidades(profile.role)) {
-      return { error: 'Sem permissão para gerenciar unidades' }
+      return { data: null, error: 'Sem permissão para gerenciar unidades' }
     }
 
-    if (!nome || !nome.trim()) return { error: 'Nome da estaca é obrigatório' }
+    if (!nome || !nome.trim()) return { data: null, error: 'Nome da estaca é obrigatório' }
 
     const supabase = await createClient()
     const { data: novaEstaca, error } = await supabase
       .from('estacas')
-      .insert({ nome: nome.trim() })
+      .insert({ nome: nome.trim() } as never)
       .select('*')
       .single()
 
     if (error) {
-      if (error.code === '23505') return { error: 'Estaca já existe' }
+      if (error.code === '23505') return { data: null, error: 'Estaca já existe' }
       throw error
     }
 
     revalidatePath('/admin/unidades')
-    return { data: novaEstaca as unknown as Estaca }
+    return { data: novaEstaca as unknown as Estaca, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao criar estaca' }
+    return handleApiError(error, 'Erro ao criar estaca')
   }
 }
 
 export async function criarAlaAction(data: { nome: string; estaca_id: string }): Promise<ApiResponse<Ala>> {
   try {
     const profile = await getUserProfile()
-    if (!profile) return { error: 'Não autenticado' }
+    if (!profile) return { data: null, error: 'Não autenticado' }
 
     if (!can.manageUnidades(profile.role)) {
-      return { error: 'Sem permissão para gerenciar unidades' }
+      return { data: null, error: 'Sem permissão para gerenciar unidades' }
     }
 
-    if (!data.nome || !data.nome.trim()) return { error: 'Nome da ala é obrigatório' }
-    if (!data.estaca_id) return { error: 'Estaca é obrigatória' }
+    if (!data.nome || !data.nome.trim()) return { data: null, error: 'Nome da ala é obrigatório' }
+    if (!data.estaca_id) return { data: null, error: 'Estaca é obrigatória' }
 
     const supabase = await createClient()
     const { data: novaAla, error } = await supabase
       .from('alas')
-      .insert({ nome: data.nome.trim(), estaca_id: data.estaca_id })
+      .insert({ nome: data.nome.trim(), estaca_id: data.estaca_id } as never)
       .select('*')
       .single()
 
     if (error) {
-      if (error.code === '23505') return { error: 'Já existe uma ala com este nome nesta estaca' }
+      if (error.code === '23505') return { data: null, error: 'Já existe uma ala com este nome nesta estaca' }
       throw error
     }
 
     revalidatePath('/admin/unidades')
-    return { data: novaAla as unknown as Ala }
+    return { data: novaAla as unknown as Ala, error: null }
   } catch (error: any) {
-    return { error: error.message || 'Erro ao criar ala' }
+    return handleApiError(error, 'Erro ao criar ala')
+  }
+}
+
+export async function atualizarEstacaAction(id: string, nome: string): Promise<ApiResponse<Estaca>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { data: null, error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { data: null, error: 'Sem permissão para gerenciar unidades' }
+    if (!nome || !nome.trim()) return { data: null, error: 'Nome da estaca é obrigatório' }
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('estacas')
+      .update({ nome: nome.trim() } as never)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      if (error.code === '23505') return { data: null, error: 'Estaca já existe' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: data as unknown as Estaca, error: null }
+  } catch (error: any) {
+    return handleApiError(error, 'Erro ao atualizar estaca')
+  }
+}
+
+export async function excluirEstacaAction(id: string): Promise<ApiResponse<null>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { data: null, error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { data: null, error: 'Sem permissão para gerenciar unidades' }
+
+    const supabase = await createClient()
+    const { error } = await supabase
+      .from('estacas')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (error.code === '23503') return { data: null, error: 'Estaca possui alas vinculadas. Remova as alas primeiro.' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: null, error: null }
+  } catch (error: any) {
+    return handleApiError(error, 'Erro ao excluir estaca')
+  }
+}
+
+export async function atualizarAlaAction(id: string, data: { nome: string; estaca_id: string }): Promise<ApiResponse<Ala>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { data: null, error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { data: null, error: 'Sem permissão para gerenciar unidades' }
+    if (!data.nome || !data.nome.trim()) return { data: null, error: 'Nome da ala é obrigatório' }
+    if (!data.estaca_id) return { data: null, error: 'Estaca é obrigatória' }
+
+    const supabase = await createClient()
+    const { data: updated, error } = await supabase
+      .from('alas')
+      .update({ nome: data.nome.trim(), estaca_id: data.estaca_id } as never)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      if (error.code === '23505') return { data: null, error: 'Já existe uma ala com este nome nesta estaca' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: updated as unknown as Ala, error: null }
+  } catch (error: any) {
+    return handleApiError(error, 'Erro ao atualizar ala')
+  }
+}
+
+export async function excluirAlaAction(id: string): Promise<ApiResponse<null>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { data: null, error: 'Não autenticado' }
+    if (!can.manageUnidades(profile.role)) return { data: null, error: 'Sem permissão para gerenciar unidades' }
+
+    const supabase = await createClient()
+    const { error } = await supabase
+      .from('alas')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (error.code === '23503') return { data: null, error: 'Ala possui atas vinculadas. Remova as atas primeiro.' }
+      throw error
+    }
+
+    revalidatePath('/admin/unidades')
+    return { data: null, error: null }
+  } catch (error: any) {
+    return handleApiError(error, 'Erro ao excluir ala')
+  }
+}
+
+export async function alterarMinhaAlaAction(alaId: string | null): Promise<ApiResponse<User>> {
+  try {
+    const profile = await getUserProfile()
+    if (!profile) return { data: null, error: 'Não autenticado' }
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('users')
+      .update({ ala_id: alaId } as never)
+      .eq('id', profile.id)
+      .select('*, ala:alas(*, estaca:estacas(*))')
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/admin/unidades')
+    revalidatePath('/dashboard')
+    return { data: data as unknown as User, error: null }
+  } catch (error: any) {
+    return handleApiError(error, 'Erro ao alterar ala')
   }
 }
